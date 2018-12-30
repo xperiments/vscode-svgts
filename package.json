@@ -1,0 +1,100 @@
+{
+  "name": "@xperiments/vscode-svg2ts",
+  "displayName": "vscode-svg2ts",
+  "description": "Display svg2ts file in VSCode.",
+  "version": "0.1.0",
+  "publisher": "xperiments",
+  "engines": {
+    "vscode": "^1.23.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "svg",
+    "svg2ts",
+    "viewer"
+  ],
+  "icon": "vscode-svg2ts.png",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xperiments/vscode-svgts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xperiments/vscode-svgts/issues"
+  },
+  "activationEvents": [
+    "onLanguage:svg2ts",
+    "onCommand:extension.svg2ts-preview",
+    "onCommand:extension.svg2ts-generate-from-dir"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "languages": [
+      {
+        "id": "svg2ts",
+        "aliases": [
+          "svg2ts viewer",
+          "svg2ts"
+        ],
+        "extensions": [
+          ".svg2ts"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "svg2ts",
+        "scopeName": "text.plain, text.plain.svg2ts",
+        "path": "./syntaxes/svg2ts.tmLanguage"
+      }
+    ],
+    "commands": [
+      {
+        "command": "extension.svg2ts-preview",
+        "title": "View svg2ts"
+      },
+      {
+        "command": "extension.svg2ts-generate-from-dir",
+        "title": "Create svgts module"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "resourceLangId == svg2ts",
+          "command": "extension.svg2ts-preview",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.svg2ts-generate-from-dir",
+          "group": "svg2ts",
+          "when": "explorerResourceIsFolder"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install",
+    "package": "npm run client && vsce package",
+    "client": "./scripts/package-client.sh"
+  },
+  "dependencies": {
+    "vscode": "^1.1.21"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "mocha": "^2.3.3",
+    "tslint": "^3.15.1",
+    "typescript": "^2.9.1",
+    "typings": "^1.4.0",
+    "vsce": "^1.42.0"
+  },
+  "homepage": "https://github.com/tomoki1207/vscode-pdfviewer#readme",
+  "author": "Pedro Casaubon",
+  "license": "MIT"
+}

@@ -1,0 +1,29 @@
+/* Add application styles & imports to this file! */
+
+@import './scss/reset';
+@import './scss/variables';
+
+body, html {
+  height: 100%;
+  width:100%;
+  overflow: hidden;
+  margin:0;
+  padding:0;
+  background-color: $aside-background-color;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 100;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@import './scss/buttons';
+@import './scss/fieldset';
+@import './scss/inputs';
+ ::-webkit-resizer {
+   background-color: yellow;
+ }

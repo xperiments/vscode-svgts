@@ -1,0 +1,11 @@
+<div
+  class="svg2ts__viewerIconsContainer"
+  [attr.size]="gridSize"
+  *ngIf="iconsData.icons != []"
+>
+  <svgts-viewer-icon
+    *ngFor="let icon of iconsData.icons"
+    [icon]="icon"
+    [hidden]="!icon.visible"
+  ></svgts-viewer-icon>
+</div>

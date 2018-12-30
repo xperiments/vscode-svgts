@@ -1,0 +1,13 @@
+<svgts-viewer-nested-form
+  [nestedFormGroup]="form"
+  [nestedFormMeta]="metadata"
+  nestedFormKey="customs"
+>
+  <div style="width:100%; text-align: right;" title="Copy Context Object">
+    <button class="svg2ts__button -small" (click)="copyToClipboard(form.value)">
+      <svg width="100%" height="100%" fill="#c6c8c8">
+        <use href="#svg2tsIcon__clipboard" />
+      </svg>
+    </button>
+  </div>
+</svgts-viewer-nested-form>

@@ -1,0 +1,63 @@
+.svg2ts__button {
+  background-color: #474848;
+  border-radius: 4px;
+  border: 1px solid #222;
+  box-shadow: rgb(115, 115, 115) 0px 1px inset;
+  box-sizing: border-box;
+  color: rgb(198, 200, 200);
+  cursor: pointer;
+  display: inline-block;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 100;
+  line-height: 22px;
+  margin: 0px;
+  padding: 0px 9px;
+  position: relative;
+  text-shadow: rgba(0, 0, 0, 0.7) 0px -1px;
+  user-select: none;
+  vertical-align: top;
+  white-space: nowrap;
+  min-height: 24px;
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background-color: rgb(89, 91, 91);
+  }
+
+  &:focus {
+    outline: 0;
+  }
+
+  &:active {
+    border: 1px solid #000;
+    transform: scale(0.98);
+  }
+
+  &.-block {
+    display: block;
+    width: 100%;
+  }
+
+  &.-big {
+    padding: 6px 12px;
+  }
+
+  svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    padding: 4px;
+  }
+
+  svg & {
+    height: 24px;
+  }
+}

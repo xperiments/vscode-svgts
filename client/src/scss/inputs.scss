@@ -1,0 +1,115 @@
+.svg2ts__textInput {
+  background: padding-box transparent;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  box-shadow: rgba(0, 0, 0, 0.2) 2px 4px 4px inset;
+  color: rgb(198, 200, 200);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: inherit;
+  letter-spacing: 0px;
+  line-height: 22px;
+  margin: 0px;
+  outline: none;
+  padding: 0px 9px;
+  vertical-align: top;
+  resize: vertical;
+  outline: none !important;
+  &:disabled {
+    opacity: 0.3;
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &:focus {
+    background-color: rgb(89, 91, 91);
+    color: white;
+  }
+
+  &:disabled::-webkit-input-placeholder {
+    color: white;
+  }
+
+  &:invalid {
+    border: 1px solid rgb(236, 81, 78);
+  }
+
+  &.-block {
+    width: 100%;
+  }
+
+  &.-big {
+    padding: 4px 9px;
+  }
+
+  &[type="color"] {
+    padding: 0;
+    height: 32px;
+    border: 1px solid #222;
+    box-shadow: rgb(115, 115, 115) 0px 1px inset;
+    &::-webkit-color-swatch-wrapper {
+      padding: 1px;
+    }
+    &::-webkit-color-swatch {
+      border: 0;
+      border-radius: 3px;
+    }
+    &.-big {
+      min-height: 36px;
+    }
+  }
+
+  &[type="checkbox"] {
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    position: relative;
+    &:checked {
+      border: 1px solid #288edf;
+      &:after {
+        content: "";
+        left: 4px;
+        top: 4px;
+        position: absolute;
+        min-width: 14px;
+        min-height: 14px;
+        border-radius: 3px;
+        border: 2px solid rgba(0, 0, 0, 0.5);
+        background-color: #288edf;
+      }
+      &:focus {
+        background-color: rgba(0, 0, 0, 0.2);
+      }
+    }
+  }
+
+  &::-webkit-scrollbar {
+    background-color: transparent;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #3c3c3d;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: gray;
+    border-radius: 8px;
+    border: 4px solid #3c3c3d;
+  }
+
+  &::-webkit-resizer {
+    background-color: gray !important;
+  }
+}
+
+.error {
+  color: white;
+  font-size: 12px;
+  margin-left: 8px;
+  background-color: rgba(255, 0, 0, 0.7);
+  padding: 4px 8px;
+  border-radius: 5px;
+  margin-bottom: 8px;
+}

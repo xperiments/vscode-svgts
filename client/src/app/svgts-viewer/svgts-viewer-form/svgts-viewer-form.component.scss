@@ -1,0 +1,16 @@
+.svg2ts__viewerFormSpacer {
+  margin-bottom:8px;
+}
+
+.svg2ts__labelTitle {
+  &.-child {
+    background-color: rgba(#fff,.1);
+    padding: 5px;
+    margin-right: 8px;
+    border-radius: 4px;
+  }
+}
+
+.svg2ts__fieldSet {
+  width: 100%;
+}
