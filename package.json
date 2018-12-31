@@ -1,5 +1,5 @@
 {
-  "name": "@xperiments/vscode-svg2ts",
+  "name": "vscode-svg2ts",
   "displayName": "vscode-svg2ts",
   "description": "Display svg2ts file in VSCode.",
   "version": "0.1.0",
