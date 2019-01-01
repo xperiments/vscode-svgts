@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Svg2TsService } from "./svg2ts.service";
+import { BehaviorSubject } from "rxjs";
 
 export interface SVG2TSExtendedFile extends SVG2TSFile {
   colorMode: "single" | "multiple";
@@ -8,7 +9,7 @@ export interface SVG2TSExtendedFile extends SVG2TSFile {
   exported: boolean;
 }
 
-const loadedIcons = window["svg2ts"] ? window["svg2ts"].icons.files : [];
+const loadedIcons = window["svg2ts"] ? window["svg2ts"].icons.files : null;
 const exportedIcons: string[] = window["svg2ts"]
   ? window["svg2ts"].icons.exports
   : [];
@@ -17,11 +18,21 @@ const exportedIcons: string[] = window["svg2ts"]
   providedIn: "root"
 })
 export class IconsDataService {
-  public icons = this._getIcons();
+  public icons$ = new BehaviorSubject<SVG2TSExtendedFile[]>(null);
+  public isPluging = false;
+  constructor(private _svg2ts: Svg2TsService) {
+    if (loadedIcons) {
+      this.isPluging = true;
+      this.icons$.next(this._getExtendedIcons(loadedIcons));
+    }
+  }
 
-  constructor(private _svg2ts: Svg2TsService) {}
-  private _getIcons(): SVG2TSExtendedFile[] {
-    return loadedIcons.map(icon => {
+  public addExternalFileIcons(icons: SVG2TSExtendedFile[]) {
+    this.icons$.next(this._getExtendedIcons(icons));
+  }
+
+  private _getExtendedIcons(icons: SVG2TSFile[]): SVG2TSExtendedFile[] {
+    return icons.map(icon => {
       return {
         ...icon,
         colorMode: this._svg2ts.determineColorMode(icon),
