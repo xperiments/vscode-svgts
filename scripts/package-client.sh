@@ -1,7 +1,7 @@
 #!/bin/sh
 
 cd client
-npm run build
+npm run package
 
 touch dist/vscode-svgts-client/build.js
 
