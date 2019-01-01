@@ -3,12 +3,10 @@ import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import { BehaviorSubject } from 'rxjs';
 import { SvgTsViewerIconComponent } from '../svgts-viewer-icon/svgts-viewer-icon.component';
+import { IconsDataService, SVGTSExtendedFile } from './icons-data.service';
 import { SvgTsService } from './svg-ts.service';
-import { SVGTSExtendedFile } from './icons-data.service';
-
 export type IconsServiceColorFilter = 'single' | 'multiple' | 'dynamic' | 'all';
 export type IconsServiceSelectFilter = 'all' | 'none';
-
 export function camelCase(str: string) {
   return str
     .replace(/[\s|_|-](.)/g, $1 => {
@@ -39,7 +37,7 @@ export function pascalCase(str: string) {
   providedIn: 'root'
 })
 export class IconsService {
-  public baseColor = null;
+  public baseColor = '#000000';
   public currentComponent: SvgTsViewerIconComponent;
   public currentIconFile: SVGTSExtendedFile;
   public gridSize = 4;
@@ -57,7 +55,7 @@ export class IconsService {
   private _canvas: HTMLCanvasElement = document.createElement('canvas');
   private _canvasCtx: CanvasRenderingContext2D;
 
-  constructor(private _svgTs: SvgTsService) {
+  constructor(private _svgTs: SvgTsService, private _iconsData: IconsDataService) {
     this.selectFilter$.subscribe(mode => {
       if (mode === 'all') {
         this.selectAll();
@@ -100,61 +98,13 @@ export class IconsService {
   }
 
   public export(type: string, size: number) {
-    const icons = this.viewList.filter(el => el.selected);
-    const zip = new JSZip();
-    let pending = icons.length;
-    icons.forEach(icon => {
-      let svgOutput = '';
-      let svgContents = '';
+    const methodMap = {
+      png: this._exportPng.bind(this),
+      svg: this._exportSvg.bind(this),
+      'svg-sprite': this._exportSvgSprite.bind(this)
+    };
 
-      if (this.selectedAreSingle && icon.iconFile.colorMode === 'single' && !icon.iconFile.contextDefaults) {
-        svgContents = this._svgTs.getTintInnerHtml(icon.iconFile, this.baseColor)[
-          'changingThisBreaksApplicationSecurity'
-        ];
-      } else {
-        svgContents = this._svgTs.getInnerHtml(icon.iconFile)['changingThisBreaksApplicationSecurity'];
-      }
-      const viewBox = this._svgTs.viewBoxString(icon.iconFile);
-      svgOutput = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${icon
-        .iconFile.viewBox.width * size}" height="${icon.iconFile.viewBox.height *
-        size}" viewBox="${viewBox}">${svgContents}</svg>`;
-
-      if (type === 'png') {
-        const img = new Image();
-
-        const that = this;
-        const svgBlob = new Blob([svgOutput], {
-          type: 'image/svg+xml;charset=utf-8'
-        });
-        const url = URL.createObjectURL(svgBlob);
-        img.onload = function() {
-          that._canvas.width = icon.iconFile.viewBox.width * size;
-          that._canvas.height = icon.iconFile.viewBox.height * size;
-          that._canvasCtx.clearRect(0, 0, that._canvas.width, that._canvas.height);
-          that._canvasCtx.drawImage(img, 0, 0);
-          const png = that._canvas.toDataURL('image/png').replace('data:image/png;base64,', '');
-          zip.file(icon.iconFile.name + '.png', png, { base64: true });
-          URL.revokeObjectURL(png);
-          pending--;
-          if (pending === 0) {
-            zip.generateAsync({ type: 'blob' }).then(content => {
-              // see FileSaver.js
-              saveAs(content, `svgts-${size}x-${+new Date()}.zip`);
-            });
-          }
-        };
-        img.src = url;
-      } else {
-        zip.file(icon.iconFile.name + '.svg', svgOutput);
-        pending--;
-        if (pending === 0) {
-          zip.generateAsync({ type: 'blob' }).then(content => {
-            // see FileSaver.js
-            saveAs(content, `svgts-${size}x-${+new Date()}.zip`);
-          });
-        }
-      }
-    });
+    methodMap[type](size);
   }
 
   public getExported() {
@@ -263,5 +213,118 @@ export class IconsService {
     this.selected = this.getSelected();
     this.selectedAreSingle = this.isSingleColor();
     this.selectedNames = this.getSelectedNames();
+  }
+
+  private _exportPng(size: number) {
+    const icons = this.viewList.filter(el => el.selected);
+    const zip = new JSZip();
+    let pending = icons.length;
+    icons.forEach(icon => {
+      let svgOutput = '';
+      let svgContents = '';
+
+      if (this.selectedAreSingle && icon.iconFile.colorMode === 'single' && !icon.iconFile.contextDefaults) {
+        svgContents = this._svgTs.getTintInnerHtml(icon.iconFile, this.baseColor)[
+          'changingThisBreaksApplicationSecurity'
+        ];
+      } else {
+        svgContents = this._svgTs.getInnerHtml(icon.iconFile)['changingThisBreaksApplicationSecurity'];
+      }
+      const viewBox = this._svgTs.viewBoxString(icon.iconFile);
+      svgOutput = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${icon
+        .iconFile.viewBox.width * size}" height="${icon.iconFile.viewBox.height *
+        size}" viewBox="${viewBox}">${svgContents}</svg>`;
+
+      const img = new Image();
+
+      const that = this;
+      const svgBlob = new Blob([svgOutput], {
+        type: 'image/svg+xml;charset=utf-8'
+      });
+      const url = URL.createObjectURL(svgBlob);
+      img.onload = function() {
+        that._canvas.width = icon.iconFile.viewBox.width * size;
+        that._canvas.height = icon.iconFile.viewBox.height * size;
+        that._canvasCtx.clearRect(0, 0, that._canvas.width, that._canvas.height);
+        that._canvasCtx.drawImage(img, 0, 0);
+        const png = that._canvas.toDataURL('image/png').replace('data:image/png;base64,', '');
+        zip.file(icon.iconFile.name + '.png', png, { base64: true });
+        URL.revokeObjectURL(png);
+        pending--;
+        if (pending === 0) {
+          zip.generateAsync({ type: 'blob' }).then(content => {
+            // see FileSaver.js
+            saveAs(content, `svgts-${size}x-${+new Date()}.zip`);
+          });
+        }
+      };
+      img.src = url;
+    });
+  }
+  private _exportSvg(size: number) {
+    const icons = this.viewList.filter(el => el.selected);
+    const zip = new JSZip();
+    let pending = icons.length;
+    icons.forEach(icon => {
+      let svgOutput = '';
+      let svgContents = '';
+
+      if (this.selectedAreSingle && icon.iconFile.colorMode === 'single' && !icon.iconFile.contextDefaults) {
+        svgContents = this._svgTs.getTintInnerHtml(icon.iconFile, this.baseColor)[
+          'changingThisBreaksApplicationSecurity'
+        ];
+      } else {
+        svgContents = this._svgTs.getInnerHtml(icon.iconFile)['changingThisBreaksApplicationSecurity'];
+      }
+      const viewBox = this._svgTs.viewBoxString(icon.iconFile);
+      svgOutput = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${icon
+        .iconFile.viewBox.width * size}" height="${icon.iconFile.viewBox.height *
+        size}" viewBox="${viewBox}">${svgContents}</svg>`;
+
+      zip.file(icon.iconFile.name + '.svg', svgOutput);
+      pending--;
+      if (pending === 0) {
+        zip.generateAsync({ type: 'blob' }).then(content => {
+          // see FileSaver.js
+          saveAs(content, `svgts-${size}x-${+new Date()}.zip`);
+        });
+      }
+    });
+  }
+  private _exportSvgSprite(size: number) {
+    const icons = this.viewList.filter(el => el.selected);
+    const zip = new JSZip();
+    let pending = icons.length;
+    let spriteContent =
+      '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display:none;">';
+    icons.forEach(icon => {
+      let svgOutput = '';
+      let svgContents = '';
+
+      if (this.selectedAreSingle && icon.iconFile.colorMode === 'single' && !icon.iconFile.contextDefaults) {
+        svgContents = this._svgTs.getTintInnerHtml(icon.iconFile, this.baseColor)[
+          'changingThisBreaksApplicationSecurity'
+        ];
+      } else {
+        svgContents = this._svgTs.getInnerHtml(icon.iconFile)['changingThisBreaksApplicationSecurity'];
+      }
+      const viewBox = this._svgTs.viewBoxString(icon.iconFile);
+      svgOutput = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${icon
+        .iconFile.viewBox.width * size}" height="${icon.iconFile.viewBox.height *
+        size}" viewBox="${viewBox}">${svgContents}</svg>`;
+
+      spriteContent += `<symbol id="${icon.iconFile.name}" viewBox="${viewBox}">${svgContents}</symbol>`;
+
+      zip.file(icon.iconFile.name + '.svg', svgOutput);
+      pending--;
+      if (pending === 0) {
+        spriteContent += '</svg>';
+        zip.file(`${this._iconsData.moduleName}.sprite.svg`, spriteContent);
+        zip.generateAsync({ type: 'blob' }).then(content => {
+          // see FileSaver.js
+          saveAs(content, `svgts-${size}x-${+new Date()}.zip`);
+        });
+      }
+    });
   }
 }
