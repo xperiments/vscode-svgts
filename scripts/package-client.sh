@@ -3,9 +3,9 @@
 cd client
 npm run build
 
-touch dist/xvs-svg2ts/build.js
+touch dist/vscode-svgts-client/build.js
 
-cat dist/xvs-svg2ts/runtime.*.js dist/xvs-svg2ts/polyfills.*.js dist/xvs-svg2ts/main.*.js >> dist/xvs-svg2ts/build.js
+cat dist/vscode-svgts-client/runtime.*.js dist/vscode-svgts-client/polyfills.*.js dist/vscode-svgts-client/main.*.js >> dist/vscode-svgts-client/build.js
 
 cd ..
 cd scripts  
