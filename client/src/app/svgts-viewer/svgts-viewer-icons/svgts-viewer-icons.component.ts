@@ -17,7 +17,7 @@ export class SvgTsViewerIconsComponent implements AfterViewInit {
 
   public fileAdded(event) {
     const targetFile = event.target.files[0];
-    if (targetFile.name.indexOf('assets.svgts') !== -1) {
+    if (targetFile.name.indexOf('.svgts') !== -1) {
       const reader = new FileReader();
       reader.onload = () => {
         this.iconsData.addExternalFileIcons(JSON.parse(reader.result as string).files);
