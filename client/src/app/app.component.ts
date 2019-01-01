@@ -1,9 +1,8 @@
-import { Component } from "@angular/core";
-import { FormControl } from "@angular/forms";
+import { Component } from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 @Component({
-  selector: "app-root",
-  templateUrl: "./app.component.html",
-  styleUrls: ["./app.component.css"]
+  selector: 'svgts-viewer-root',
+  templateUrl: './app.component.html'
 })
 export class AppComponent {}

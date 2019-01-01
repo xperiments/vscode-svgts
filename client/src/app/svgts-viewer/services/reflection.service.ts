@@ -1,38 +1,30 @@
-import { cssColors } from "./css-colors";
+import { cssColors } from './css-colors';
 
-export type SVG2TSViewerContextUnits =
-  | "px"
-  | "em"
-  | "rem"
-  | "vw"
-  | "vh"
-  | "deg"
-  | "%";
+export type SVG2TSViewerContextUnits = 'px' | 'em' | 'rem' | 'vw' | 'vh' | 'deg' | '%';
 
 export type SVG2TSViewerContextTypes =
-  | "integer"
-  | "undefined"
-  | "float"
-  | "color.short"
-  | "color.long"
-  | "color.name"
-  | "rgba"
-  | "text.short"
-  | "text.long"
-  | "child";
+  | 'integer'
+  | 'undefined'
+  | 'float'
+  | 'color.short'
+  | 'color.long'
+  | 'color.name'
+  | 'rgba'
+  | 'text.short'
+  | 'text.long'
+  | 'child';
 
 export interface SVG2TSViewerContext {
   label: string;
-  type: SVG2TSViewerContextTypes;
-  unit?: SVG2TSViewerContextUnits;
-
   range?: {
-    min: number;
     max: number;
+    min: number;
     step: number;
   };
-  value: string | number;
+  type: SVG2TSViewerContextTypes;
+  unit?: SVG2TSViewerContextUnits;
   validation: { required: boolean };
+  value: string | number;
 }
 
 const cssColorsNames = Object.keys(cssColors);
@@ -42,22 +34,26 @@ function getNumberRange(value, unit) {
   const floatValue = parseFloat(value);
   const step = isFloat(value) ? 0.1 : 1;
   switch (true) {
-    case unit === "%":
+    case unit === '%': {
       return { min: 0, max: 100, step };
       break;
-    case unit === "deg":
+    }
+    case unit === 'deg': {
       return { min: 0, max: 360, step };
       break;
-
-    case floatValue < 10:
+    }
+    case floatValue < 10: {
       return { min: 0, max: intValue * 2, step };
       break;
-    case floatValue >= 10 && floatValue < 100:
+    }
+    case floatValue >= 10 && floatValue < 100: {
       return { min: 0, max: intValue * 2, step };
       break;
-    case floatValue >= 100 && floatValue < 1000:
+    }
+    case floatValue >= 100 && floatValue < 1000: {
       return { min: 0, max: intValue * 2, step: 1 };
       break;
+    }
   }
 }
 
@@ -71,8 +67,8 @@ function isInt(n: number) {
 
 function traverseTree(obj: any) {
   return Object.keys(obj).reduce((acc, key) => {
-    if (typeof obj[key] !== "object") {
-      acc[key] = determineType("" + obj[key], key);
+    if (typeof obj[key] !== 'object') {
+      acc[key] = determineType('' + obj[key], key);
     } else {
       acc[key] = traverseTree(obj[key]);
     }
@@ -81,43 +77,37 @@ function traverseTree(obj: any) {
 }
 
 export function determineType(value: string, key: string): SVG2TSViewerContext {
-  value += "";
-  const units = ["px", "em", "rem", "vw", "vh", "deg", "%"];
+  value += '';
+  const units = ['px', 'em', 'rem', 'vw', 'vh', 'deg', '%'];
   const numberValue = parseInt(value, 10);
   const floatValue = parseFloat(value);
   const isNumber = isInt(numberValue);
   const isFloatNumber = isFloat(floatValue);
   const isNumeric = isNumber || isFloatNumber;
   const unit: SVG2TSViewerContextUnits = value.replace(
-    String(
-      isNumber && !isFloatNumber
-        ? numberValue
-        : isFloatNumber
-        ? floatValue
-        : "-never-"
-    ),
-    ""
+    String(isNumber && !isFloatNumber ? numberValue : isFloatNumber ? floatValue : '-never-'),
+    ''
   ) as SVG2TSViewerContextUnits;
-  const isNumericUnit = isNumber && units["includes"](unit);
+  const isNumericUnit = isNumber && units['includes'](unit);
   const isLongColor = /#[abcdefABCDEF0123456789]{6}/.exec(value) ? true : false;
-  const isShortColor =
-    !isLongColor && /#[abcdefABCDEF0123456789]{3}/.exec(value) ? true : false;
-  const isNamedColor = cssColorsNames["includes"](value);
+  const isShortColor = !isLongColor && /#[abcdefABCDEF0123456789]{3}/.exec(value) ? true : false;
+  const isNamedColor = cssColorsNames['includes'](value);
   const isColor = isShortColor || isLongColor || isNamedColor;
   const isRGBA = value.match(/rgba\((.*?)\)/) ? true : false;
-  const isString = typeof value === "string" && isNaN(numberValue);
+  const isString = typeof value === 'string' && isNaN(numberValue);
 
   switch (true) {
-    case isNumeric && !isNumericUnit:
+    case isNumeric && !isNumericUnit: {
       return {
         label: key,
-        type: isNumber && !isFloatNumber ? "integer" : "float",
+        type: isNumber && !isFloatNumber ? 'integer' : 'float',
         range: getNumberRange(!isFloatNumber ? numberValue : floatValue, unit),
         value: floatValue,
         validation: { required: true }
       };
       break;
-    case isNumeric && isNumericUnit:
+    }
+    case isNumeric && isNumericUnit: {
       return {
         label: key,
         type: isNumber && !isFloatNumber ? `integer` : `float`,
@@ -127,68 +117,76 @@ export function determineType(value: string, key: string): SVG2TSViewerContext {
         validation: { required: true }
       };
       break;
-    case isString && isShortColor:
+    }
+    case isString && isShortColor: {
       return {
         label: key,
-        type: "color.short",
+        type: 'color.short',
         value:
-          "#" +
+          '#' +
           value
             .substr(1)
-            .split("")
-            .map(_ => _ + _)
-            .join(""),
+            .split('')
+            .map(hex => hex + hex)
+            .join(''),
         validation: { required: true }
       };
       break;
-    case isString && isLongColor:
+    }
+    case isString && isLongColor: {
       return {
         label: key,
-        type: "color.long",
+        type: 'color.long',
         value,
         validation: { required: true }
       };
       break;
-    case isString && isNamedColor:
+    }
+    case isString && isNamedColor: {
       return {
         label: key,
-        type: "color.name",
+        type: 'color.name',
         value: cssColors[value],
         validation: { required: true }
       };
       break;
-    case isString && isRGBA:
+    }
+    case isString && isRGBA: {
       return {
         label: key,
-        type: "rgba",
+        type: 'rgba',
         value,
         validation: { required: true }
       };
       break;
-    case isString && !isRGBA && !isColor && value.length < 30:
+    }
+    case isString && !isRGBA && !isColor && value.length < 30: {
       return {
         label: key,
-        type: "text.short",
+        type: 'text.short',
         value,
         validation: { required: true }
       };
       break;
-    case isString && !isRGBA && !isLongColor && value.length >= 30:
+    }
+    case isString && !isRGBA && !isLongColor && value.length >= 30: {
       return {
         label: key,
-        type: "text.long",
+        type: 'text.long',
         value,
         validation: { required: true }
       };
       break;
-    default:
+    }
+    default: {
       return {
         label: key,
-        type: "text.short",
+        type: 'text.short',
         value,
         validation: { required: true }
       };
       break;
+    }
   }
 }
 

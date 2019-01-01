@@ -1,0 +1,49 @@
+{
+  "extends": "../tslint.json",
+  "rules": {
+    "directive-selector": [true, "attribute", ["svgts"], "camelCase"],
+    "component-selector": [true, "element", ["svgts"], "kebab-case"],
+
+    "deprecation": { "severity": "warning" },
+    "rxjs-no-internal": { "severity": "error" },
+    "rxjs-finnish": {
+      "options": [
+        {
+          "functions": false,
+          "methods": true,
+          "parameters": false,
+          "properties": true,
+          "variables": true
+        }
+      ],
+      "severity": "error"
+    },
+    "rxjs-no-subject-unsubscribe": { "severity": "error" },
+    "rxjs-no-unsafe-scope": { "severity": "warning" },
+    "rxjs-no-unsafe-switchmap": {
+      "severity": "error"
+    },
+    "rxjs-throw-error": {
+      "severity": "error"
+    },
+    "ext-variable-name": [
+      true,
+      ["class", "pascal"],
+      ["interface", "pascal"],
+      ["parameter", "camel"],
+      ["property", "static", "upper", "allow-leading-underscore"],
+      ["property", "private", "camel", "require-leading-underscore"],
+      ["property", "protected", "camel", "allow-leading-underscore"],
+      ["variable", "local", "camel"],
+      ["variable", "const", "camel"],
+      ["variable", "camel"],
+      ["method", "private", "camel", "require-leading-underscore"],
+      ["method", "protected", "camel", "allow-leading-underscore"],
+      ["function", "camel"],
+      ["default", "camel"]
+    ],
+    "max-params": [true, 3],
+    "prefer-case-blocks": true,
+    "member-access": true
+  }
+}

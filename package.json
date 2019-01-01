@@ -15,7 +15,7 @@
     "svg2ts",
     "viewer"
   ],
-  "icon": "vscode-svg2ts.png",
+  "icon": "vscode-svgts.png",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/xperiments/vscode-svgts.git"

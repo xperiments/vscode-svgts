@@ -1,12 +1,9 @@
-import { Component } from "@angular/core";
-import {
-  IconsService,
-  IconsServiceColorFilter,
-  IconsServiceSelectFilter
-} from "../services/icons.service";
-import { ClipboardService } from "../services/clipboard.service";
-import { Svg2TsService } from "../services/svg2ts.service";
-import { FormGroup, Validators, FormControl } from "@angular/forms";
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
+import { ClipboardService } from '../services/clipboard.service';
+import { IconsDataService } from '../services/icons-data.service';
+import { IconsService, IconsServiceColorFilter, IconsServiceSelectFilter } from '../services/icons.service';
+import { Svg2TsService } from '../services/svg2ts.service';
 
 declare var acquireVsCodeApi;
 let vscode;
@@ -16,38 +13,44 @@ try {
 } catch {}
 
 @Component({
-  selector: "svgts-viewer-sidebar",
-  templateUrl: "./svgts-viewer-sidebar.component.html",
-  styleUrls: ["./svgts-viewer-sidebar.component.scss"]
+  selector: 'svgts-viewer-sidebar',
+  templateUrl: './svgts-viewer-sidebar.component.html',
+  styleUrls: ['./svgts-viewer-sidebar.component.scss']
 })
-export class SvgTsViewerSidebarComponent {
-  public infoKeys: Array<string> = ["name", "width", "height"];
-  public gridSize: number = 5;
-  public baseColor: string = "#000000";
+export class SvgTsViewerSidebarComponent implements OnInit {
+  public baseColor = '#000000';
   public baseColorFormGroup: FormGroup;
+  public gridSize: number;
+  public infoKeys: Array<string> = ['name', 'width', 'height'];
 
   constructor(
     public icons: IconsService,
+    public iconsData: IconsDataService,
     private _clipboard: ClipboardService,
     private _svg2ts: Svg2TsService
-  ) {}
+  ) {
+    this.gridSize = this.icons.gridSize;
+  }
 
-  public showGrid(size: number) {
-    this.icons.setGridSize(size);
-    this.gridSize = size;
+  public colorMode(mode: IconsServiceColorFilter) {
+    this.icons.iconColorFilter$.next(mode);
   }
 
   public copyToClipboard(value: string | {}) {
     this._clipboard.copy(value);
   }
 
+  public deselectByName(name: string) {
+    this.icons.deselectByName(name);
+  }
+
+  public export(type: string, size: number) {
+    this.icons.export(type, size);
+  }
+
   public getCurrentViewBox() {
     return this._svg2ts.viewBoxString(this.icons.currentIconFile);
   }
-
-  public change(e) {}
-
-  public changeBaseColor() {}
 
   public ngOnInit() {
     this.baseColorFormGroup = new FormGroup({
@@ -59,25 +62,13 @@ export class SvgTsViewerSidebarComponent {
     });
   }
 
-  public updateBaseColorForm() {
-    const value = this.baseColorFormGroup.get("baseColor").value;
-    this.baseColorFormGroup.get("baseColor").setValue(value);
-  }
-
-  public colorMode(mode: IconsServiceColorFilter) {
-    this.icons.iconColorFilter$.next(mode);
-  }
-
   public select(mode: IconsServiceSelectFilter) {
     this.icons.selectFilter$.next(mode);
   }
 
-  public deselectByName(name: string) {
-    this.icons.deselectByName(name);
-  }
-
-  public export(type: string, size: number) {
-    this.icons.export(type, size);
+  public showGrid(size: number) {
+    this.icons.setGridSize(size);
+    this.gridSize = size;
   }
 
   public toggleExport() {
@@ -86,10 +77,15 @@ export class SvgTsViewerSidebarComponent {
 
     if (vscode) {
       vscode.postMessage({
-        command: "updateExports",
+        command: 'updateExports',
         exports: this.icons.getExported(),
         assets: this.icons.getExportedAssets()
       });
     }
+  }
+
+  public updateBaseColorForm() {
+    const value = this.baseColorFormGroup.get('baseColor').value;
+    this.baseColorFormGroup.get('baseColor').setValue(value);
   }
 }

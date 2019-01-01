@@ -7,16 +7,10 @@
   <div [formGroup]="nestedFormGroup">
     <div *ngFor="let control of (nestedFormGroup.controls | keyvalue: compare)">
       <ng-container *ngIf="!isFormGroup(control.value)">
-        <label
-          [attr.for]="control.key"
-          class="svg2ts__label"
-          *ngIf="control.key !== 'uuid'"
-        >
-          <span
-            class="svg2ts__labelTitle"
-            *ngIf="nestedFormMeta[control.key].type !== 'child'"
-            >{{ nestedFormMeta[control.key].label }}</span
-          >
+        <label [attr.for]="control.key" class="svg2ts__label" *ngIf="control.key !== 'uuid'">
+          <span class="svg2ts__labelTitle" *ngIf="nestedFormMeta[control.key].type !== 'child'">
+            {{ nestedFormMeta[control.key].label }}
+          </span>
           <ng-container [ngSwitch]="nestedFormMeta[control.key].type">
             <svgts-drag-input
               *ngSwitchCase="'integer'"
@@ -72,8 +66,7 @@
           class="error"
           *ngIf="
             nestedFormGroup.get(control.key).invalid &&
-            (nestedFormGroup.get(control.key).dirty ||
-              nestedFormGroup.get(control.key).touched)
+            (nestedFormGroup.get(control.key).dirty || nestedFormGroup.get(control.key).touched)
           "
         >
           <div *ngIf="nestedFormGroup.get(control.key).errors">

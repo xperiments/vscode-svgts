@@ -1,35 +1,32 @@
-import {
-  Component,
-  Input,
-  ChangeDetectionStrategy,
-  ViewChildren,
-  QueryList
-} from "@angular/core";
-import {
-  IconsDataService,
-  SVG2TSExtendedFile
-} from "../services/icons-data.service";
-import { IconsService } from "../services/icons.service";
-import { filter } from "rxjs/operators";
-import { SvgTsViewerIconComponent } from "../svgts-viewer-icon/svgts-viewer-icon.component";
+import { ChangeDetectionStrategy, Component, Input, QueryList, ViewChildren, AfterViewInit } from '@angular/core';
+import { IconsDataService } from '../services/icons-data.service';
+import { IconsService } from '../services/icons.service';
+import { SvgTsViewerIconComponent } from '../svgts-viewer-icon/svgts-viewer-icon.component';
 
 @Component({
-  selector: "svgts-viewer-icons",
-  templateUrl: "./svgts-viewer-icons.component.html",
-  styleUrls: ["./svgts-viewer-icons.component.scss"],
+  selector: 'svgts-viewer-icons',
+  templateUrl: './svgts-viewer-icons.component.html',
+  styleUrls: ['./svgts-viewer-icons.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SvgTsViewerIconsComponent {
+export class SvgTsViewerIconsComponent implements AfterViewInit {
   @Input() public gridSize = 5;
-  @ViewChildren(SvgTsViewerIconComponent) viewList: QueryList<
-    SvgTsViewerIconComponent
-  >;
+  @ViewChildren(SvgTsViewerIconComponent) private _viewList: QueryList<SvgTsViewerIconComponent>;
 
-  constructor(
-    public iconsData: IconsDataService,
-    public iconsService: IconsService
-  ) {}
+  constructor(public iconsData: IconsDataService, public iconsService: IconsService) {}
+
+  public fileAdded(event) {
+    const targetFile = event.target.files[0];
+    if (targetFile.name.indexOf('.svg2ts') !== -1) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.iconsData.addExternalFileIcons(JSON.parse(reader.result as string).files);
+      };
+      reader.readAsText(event.target.files[0]);
+    }
+  }
+
   public ngAfterViewInit() {
-    this.iconsService.viewList = this.viewList;
+    this.iconsService.viewList = this._viewList;
   }
 }

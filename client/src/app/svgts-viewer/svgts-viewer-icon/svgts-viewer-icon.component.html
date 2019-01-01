@@ -11,15 +11,8 @@
     [innerHTML]="svgContents"
   ></svg>
 </div>
-<span class="svg2ts__viewerIconMeta"
-  >{{ iconFile.viewBox.width }}x{{ iconFile.viewBox.height }}</span
->
-<svg
-  width="24"
-  height="24"
-  class="svg2ts__viewerIconSelection"
-  (click)="toggleSelection()"
->
+<span class="svg2ts__viewerIconMeta">{{ iconFile.viewBox.width }}x{{ iconFile.viewBox.height }}</span>
+<svg width="24" height="24" class="svg2ts__viewerIconSelection" (click)="toggleSelection()">
   <use xlink:href="#svg2tsIcon__check"></use>
 </svg>
 

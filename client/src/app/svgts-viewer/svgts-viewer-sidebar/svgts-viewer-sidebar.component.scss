@@ -1,15 +1,15 @@
 :host {
+  background-color: #3c3c3d;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 320px;
+  overflow: hidden;
   overflow-y: auto;
   padding-left: 8px;
   padding-right: 8px;
-  background-color: #3c3c3d;
-  max-width: 320px;
+  position: relative;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
 
   &::-webkit-scrollbar {
     background-color: transparent;
@@ -27,43 +27,47 @@
 }
 
 .svg2ts__sidebarNavbar {
+  background-color: #3c3c3d;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
   display: inline-flex;
+  height: 36px;
+  margin-bottom: 8px;
+  min-height: 36px;
+  padding-top: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 
   .svg2ts__sidebarNavbarIcon {
     height: 24px;
+
     svg {
-      width: 18px;
-      height: 18px;
-      fill: rgba(#c6c8c8, 0.5);
       cursor: pointer;
+      fill: rgba(#c6c8c8, 0.5);
+      height: 18px;
+      width: 18px;
+
       &:hover {
         fill: #fff;
       }
+
       &.-selected {
         fill: #fff;
       }
     }
   }
-  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-  margin-bottom: 8px;
-  position: sticky;
-  background-color: #3c3c3d;
-  z-index: 1;
-  top: 0;
-  padding-top: 10px;
-  height: 36px;
-  min-height: 36px;
 }
 
 .svg2ts__sidebarButtonGroup {
+  background-color: rgba(0, 0, 0, 0.4);
+  border-radius: 5px;
   display: flex;
   margin-bottom: 8px;
-  background-color: rgba(0, 0, 0, 0.4);
   padding: 4px;
-  border-radius: 5px;
+
   &.-inline {
-    margin-right: 4px;
     display: inline-block;
+    margin-right: 4px;
     min-height: 44px;
   }
   button:not(:first-child) {
@@ -73,20 +77,22 @@
 
 .svg2ts__sidebarSelectList {
   li {
-    display: inline-block;
     background-color: #288edf;
-    padding: 2px 4px;
     border-radius: 4px;
+    display: inline-block;
     font-size: 12px;
-    margin-right: 2px;
     margin-bottom: 4px;
-    user-select: none;
+    margin-right: 2px;
+    padding: 2px 4px;
     pointer-events: none;
+    user-select: none;
+
     &::after {
-      content: "×";
+      content: '×';
       cursor: pointer;
       pointer-events: all;
     }
+
     &:hover {
       &::after {
         color: white;
@@ -97,4 +103,16 @@
 
 .svg2ts__sidebarSpacer {
   height: 100%;
+}
+
+.svg2ts__sidebarLogo {
+  bottom: 48px;
+  color: hsl(0, 0%, 0%);
+  fill: none;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.2;
+  pointer-events: none;
+  position: absolute;
 }

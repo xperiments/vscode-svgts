@@ -1,46 +1,46 @@
 :host {
   background-color: #c6c8c8;
   border-radius: 5px;
-  margin: 6px;
-  position: relative;
-  overflow: hidden;
-  min-width: 120px;
-  min-height: 120px;
-  z-index: -1;
   display: block;
+  margin: 6px;
+  min-height: 120px;
+  min-width: 120px;
+  overflow: hidden;
+  position: relative;
+  z-index: -1;
 
   &[hidden] {
     display: none;
   }
 
   .svg2ts__viewerIconContainer {
-    position: absolute;
+    cursor: pointer;
+    height: 100%;
     left: 0;
+    padding: 24px;
+    position: absolute;
     top: 0;
     width: 100%;
-    height: 100%;
-    cursor: pointer;
-    padding: 24px;
   }
   .svg2ts__viewerIconMeta {
-    position: absolute;
-    left: 8px;
+    background-color: rgba(#fff, 0.6);
+    border-radius: 4px;
     bottom: 8px;
     display: none;
     font-size: 12px;
-    background-color: rgba(#fff, 0.6);
+    left: 8px;
     padding: 0px 4px;
-    border-radius: 4px;
+    position: absolute;
     user-select: none;
   }
 
   .svg2ts__viewerIconSelection {
+    cursor: pointer;
+    display: none;
     fill: #aaa;
     position: absolute;
     right: 8px;
     top: 8px;
-    display: none;
-    cursor: pointer;
 
     &:hover {
       fill: #000;
@@ -50,6 +50,7 @@
   &:hover {
     box-shadow: 0 0 0 4px #d77120;
     z-index: 1;
+
     .svg2ts__viewerIconMeta,
     .svg2ts__viewerIconSelection {
       display: block;
@@ -57,20 +58,20 @@
   }
 
   &.-detail {
-    width: 100% !important;
-    height: 100vh !important;
-
-    position: fixed !important;
-    width: calc(100% - 320px) !important;
-    height: 100vh;
     background-color: #c6c8c8 !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    height: 100vh !important;
+    height: 100vh;
     left: 0;
-    top: 0;
-    z-index: 1 !important;
     margin: 0 !important;
     padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
+    position: fixed !important;
+    top: 0;
+    width: 100% !important;
+    width: calc(100% - 320px) !important;
+    z-index: 1 !important;
+
     &:hover {
       box-shadow: none;
     }
@@ -78,13 +79,15 @@
 
   &.-selected {
     box-shadow: 0 0 0 4px #288edf !important;
+
     .svg2ts__viewerIconSelection {
-      fill: #000;
       display: block;
+      fill: #000;
       &:hover {
         fill: #000;
       }
     }
+
     &.-detail {
       box-shadow: none;
     }
@@ -92,8 +95,8 @@
 }
 
 .svg2ts__export {
-  position: absolute;
-  left: 8px;
-  top: 8px;
   fill: #000;
+  left: 8px;
+  position: absolute;
+  top: 8px;
 }

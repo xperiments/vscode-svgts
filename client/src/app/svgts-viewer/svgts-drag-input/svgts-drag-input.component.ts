@@ -1,23 +1,15 @@
-import {
-  Component,
-  ElementRef,
-  forwardRef,
-  Input,
-  OnInit,
-  Renderer2,
-  ViewChild
-} from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-
-const INPUT_DRAG_VALUE_ACCESSOR: any = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => SvgTsDragInputComponent),
-  multi: true
-};
+import { Component, ElementRef, forwardRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  selector: "svgts-drag-input",
-  providers: [INPUT_DRAG_VALUE_ACCESSOR],
+  selector: 'svgts-drag-input',
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => SvgTsDragInputComponent),
+      multi: true
+    }
+  ],
   template: `
     <div
       class="svg2ts__textInput"
@@ -63,39 +55,35 @@ const INPUT_DRAG_VALUE_ACCESSOR: any = {
   ]
 })
 export class SvgTsDragInputComponent implements ControlValueAccessor, OnInit {
-  @Input() public unit: string;
   @Input() public decimal = false;
   public onChange: any;
   public onTouched: any;
-  @ViewChild("input") private _input: ElementRef;
-  private _mouseDown = false;
-  private _startPointValue = {
-    x: 0,
-    y: 0,
-    value: null
-  };
-
+  @Input() public unit: string;
   private _downBind: (event: MouseEvent) => void;
+  @ViewChild('input') private _input: ElementRef;
+  private _mouseDown = false;
+  private _startPointValue = { x: 0, y: 0, value: null };
   private _upBind: () => void;
   private _updateBind: (event: MouseEvent) => void;
 
-  constructor(private renderer: Renderer2) {
+  constructor(private _renderer: Renderer2) {
     this._downBind = this._down.bind(this);
     this._upBind = this._up.bind(this);
     this._updateBind = this._update.bind(this);
   }
 
-  public ngOnInit() {
-    this._input.nativeElement.addEventListener("mousedown", this._downBind);
-  }
   public change($event) {
     const value: string = this._input.nativeElement.textContent;
     this.onChange(value);
     this.onTouched(value);
   }
 
-  public writeValue(value: any): void {
-    this.renderer.setProperty(this._input.nativeElement, "textContent", value);
+  public ngOnInit() {
+    this._input.nativeElement.addEventListener('mousedown', this._downBind);
+  }
+
+  public onKeyPress($event: KeyboardEvent) {
+    return $event.keyCode !== 13;
   }
 
   public registerOnChange(fn: any): void {
@@ -107,17 +95,17 @@ export class SvgTsDragInputComponent implements ControlValueAccessor, OnInit {
   }
 
   public setDisabledState(isDisabled: boolean): void {
-    const action = isDisabled ? "addClass" : "removeClass";
-    this.renderer[action](this._input.nativeElement, "disabled");
+    const action = isDisabled ? 'addClass' : 'removeClass';
+    this._renderer[action](this._input.nativeElement, 'disabled');
   }
 
-  public onKeyPress($event: KeyboardEvent) {
-    return $event.which != 13;
+  public writeValue(value: any): void {
+    this._renderer.setProperty(this._input.nativeElement, 'textContent', value);
   }
 
   private _down(event: MouseEvent) {
-    window.addEventListener("mouseup", this._upBind);
-    window.addEventListener("mousemove", this._updateBind);
+    window.addEventListener('mouseup', this._upBind);
+    window.addEventListener('mousemove', this._updateBind);
     this._mouseDown = true;
     this._startPointValue = {
       x: event.clientX,
@@ -130,8 +118,8 @@ export class SvgTsDragInputComponent implements ControlValueAccessor, OnInit {
     if (this._mouseDown) {
       this.change(event);
       this._mouseDown = false;
-      window.removeEventListener("mouseup", this._upBind);
-      window.removeEventListener("mousemove", this._updateBind);
+      window.removeEventListener('mouseup', this._upBind);
+      window.removeEventListener('mousemove', this._updateBind);
       this._startPointValue = {
         x: 0,
         y: 0,
@@ -144,11 +132,8 @@ export class SvgTsDragInputComponent implements ControlValueAccessor, OnInit {
   private _update(event: MouseEvent) {
     if (this._mouseDown) {
       const xDiff = event.clientX - this._startPointValue.x;
-      const targetValue =
-        this._startPointValue.value + xDiff * (this.decimal ? 0.05 : 0.5);
-      this.writeValue(
-        !this.decimal ? Math.floor(targetValue) : targetValue.toFixed(2)
-      );
+      const targetValue = this._startPointValue.value + xDiff * (this.decimal ? 0.05 : 0.5);
+      this.writeValue(!this.decimal ? Math.floor(targetValue) : targetValue.toFixed(2));
       this.change(event);
     }
   }

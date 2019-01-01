@@ -44,7 +44,7 @@
     padding: 4px 9px;
   }
 
-  &[type="color"] {
+  &[type='color'] {
     padding: 0;
     height: 32px;
     border: 1px solid #222;
@@ -61,7 +61,7 @@
     }
   }
 
-  &[type="checkbox"] {
+  &[type='checkbox'] {
     appearance: none;
     width: 24px;
     height: 24px;
@@ -69,7 +69,7 @@
     &:checked {
       border: 1px solid #288edf;
       &:after {
-        content: "";
+        content: '';
         left: 4px;
         top: 4px;
         position: absolute;
