@@ -46,7 +46,7 @@ export class Svg2TsService {
   }
 
   public viewBoxAttribute(icon: SVG2TSFile) {
-    return `viewBox="${this.viewBoxString(icon)}""`;
+    return `viewBox="${this.viewBoxString(icon)}"`;
   }
 
   public viewBoxString(icon: SVG2TSFile) {
@@ -61,11 +61,14 @@ export class Svg2TsService {
     iconFile["context"] = context;
 
     const foundAttributes = iconFile.svg.match(/\[attr\.(.*?)]="(.*?)"/g);
+
     let svg = iconFile.svg.replace(
       /\[attr.xlink:href]="getXlinkBase\('(.*?)'\)"/g,
       `xlink:href="#$1-${iconFile.contextDefaults.uuid}"`
     );
+
     if (foundAttributes) {
+      let count = 0;
       svg = foundAttributes.reduce((acc, value) => {
         const [, attribute, target] = value.match(/\[attr\.(.*?)]="(.*?)"/);
 
@@ -73,7 +76,11 @@ export class Svg2TsService {
           if (target === "viewBox") {
             acc = acc.replace(value, this.viewBoxAttribute(iconFile));
           } else {
-            acc = acc.replace(value, "");
+            acc = acc.replace(/\\'(.+?)\\'\+context.uuid"/g, '$10"');
+            acc = acc.replace(
+              /\\'(.+?)\\'\+context.uuid\+\\'(.+?)\\'/gm,
+              "$10$2"
+            );
           }
         } else {
           const dest = target.split(".").reduce((o, i) => o[i], iconFile);
@@ -93,6 +100,8 @@ export class Svg2TsService {
       }, svg);
     }
 
+    svg = svg.replace(/\[attr.(.+?)\]/g, "$1");
+    console.log(svg);
     return svg;
   }
 }
