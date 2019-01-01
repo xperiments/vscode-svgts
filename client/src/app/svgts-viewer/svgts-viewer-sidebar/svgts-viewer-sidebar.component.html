@@ -54,9 +54,12 @@
   </div>
 </div>
 
-<div class="svgTs__fieldSet -tree">
+<div class="svgTs__fieldSet -tree" *ngIf="icons.currentComponent">
   <div class="svgTs__legend">
     <div style="width:100%;">info</div>
+    <button class="svgTs__button -small" (click)="copyIconTemplate()">
+      <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__angular" /></svg>
+    </button>
     <div style="text-align: right;" *ngIf="!icons.currentIconFile?.contextDefaults && iconsData.isPluging">
       <label class="svgTs__label"
         ><span class="svgTs__labelTitle">exported</span>
@@ -111,6 +114,7 @@
   </div>
   <div class="svgTs__sidebarButtonGroup -inline">
     <button (click)="export('svg', 1)" class="svgTs__button -big">svg</button>
+    <button (click)="export('svg-sprite', 1)" class="svgTs__button -big">sprite</button>
   </div>
 
   <ul class="svgTs__sidebarSelectList">
