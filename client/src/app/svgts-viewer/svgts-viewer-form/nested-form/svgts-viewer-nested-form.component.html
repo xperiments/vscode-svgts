@@ -7,7 +7,11 @@
   <div [formGroup]="nestedFormGroup">
     <div *ngFor="let control of (nestedFormGroup.controls | keyvalue: compare)">
       <ng-container *ngIf="!isFormGroup(control.value)">
-        <label [attr.for]="control.key" class="svg2ts__label">
+        <label
+          [attr.for]="control.key"
+          class="svg2ts__label"
+          *ngIf="control.key !== 'uuid'"
+        >
           <span
             class="svg2ts__labelTitle"
             *ngIf="nestedFormMeta[control.key].type !== 'child'"
