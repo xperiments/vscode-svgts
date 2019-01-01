@@ -12,7 +12,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   ],
   template: `
     <div
-      class="svg2ts__textInput"
+      class="svgTs__textInput"
       contenteditable="true"
       #input
       tabindex="1"
@@ -27,26 +27,26 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
         width: 100%;
       }
 
-      .svg2ts__textInput {
+      .svgTs__textInput {
         cursor: ew-resize;
         text-wrap: no-wrap;
         color: rgb(198, 200, 200);
       }
 
-      .svg2ts__textInput::selection {
+      .svgTs__textInput::selection {
         background: transparent;
         color: #fff;
       }
 
-      .svg2ts__textInput:focus {
+      .svgTs__textInput:focus {
         color: #fff;
       }
 
-      .svg2ts__textInput:after {
+      .svgTs__textInput:after {
         content: attr(title);
       }
 
-      .svg2ts__textInput.disabled {
+      .svgTs__textInput.disabled {
         cursor: not-allowed;
         opacity: 0.5;
         pointer-events: none;

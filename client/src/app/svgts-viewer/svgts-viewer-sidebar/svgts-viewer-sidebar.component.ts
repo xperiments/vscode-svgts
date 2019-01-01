@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { ClipboardService } from '../services/clipboard.service';
 import { IconsDataService } from '../services/icons-data.service';
 import { IconsService, IconsServiceColorFilter, IconsServiceSelectFilter } from '../services/icons.service';
-import { Svg2TsService } from '../services/svg2ts.service';
+import { SvgTsService } from '../services/svg-ts.service';
 
 declare var acquireVsCodeApi;
 let vscode;
@@ -27,7 +27,7 @@ export class SvgTsViewerSidebarComponent implements OnInit {
     public icons: IconsService,
     public iconsData: IconsDataService,
     private _clipboard: ClipboardService,
-    private _svg2ts: Svg2TsService
+    private _svgTs: SvgTsService
   ) {
     this.gridSize = this.icons.gridSize;
   }
@@ -49,7 +49,7 @@ export class SvgTsViewerSidebarComponent implements OnInit {
   }
 
   public getCurrentViewBox() {
-    return this._svg2ts.viewBoxString(this.icons.currentIconFile);
+    return this._svgTs.viewBoxString(this.icons.currentIconFile);
   }
 
   public ngOnInit() {

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "xvs-svg2ts": {
+    "vscode-svgts-client": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/xvs-svg2ts",
+            "outputPath": "dist/vscode-svgts-client",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -49,18 +49,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "xvs-svg2ts:build"
+            "browserTarget": "vscode-svgts-client:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "xvs-svg2ts:build:production"
+              "browserTarget": "vscode-svgts-client:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "xvs-svg2ts:build"
+            "browserTarget": "vscode-svgts-client:build"
           }
         },
         "test": {
@@ -85,5 +85,5 @@
       }
     }
   },
-  "defaultProject": "xvs-svg2ts"
+  "defaultProject": "vscode-svgts-client"
 }

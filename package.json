@@ -1,7 +1,7 @@
 {
-  "name": "vscode-svg2ts",
-  "displayName": "vscode-svg2ts",
-  "description": "Display svg2ts file in VSCode.",
+  "name": "vscode-svgts",
+  "displayName": "vscode-svgts",
+  "description": "Display svgts file in VSCode.",
   "version": "0.1.0",
   "publisher": "xperiments",
   "engines": {
@@ -12,7 +12,7 @@
   ],
   "keywords": [
     "svg",
-    "svg2ts",
+    "svgts",
     "viewer"
   ],
   "icon": "vscode-svgts.png",
@@ -24,52 +24,52 @@
     "url": "https://github.com/xperiments/vscode-svgts/issues"
   },
   "activationEvents": [
-    "onLanguage:svg2ts",
-    "onCommand:extension.svg2ts-preview",
-    "onCommand:extension.svg2ts-generate-from-dir"
+    "onLanguage:svgts",
+    "onCommand:extension.svgts-preview",
+    "onCommand:extension.svgts-generate-from-dir"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "languages": [
       {
-        "id": "svg2ts",
+        "id": "svgts",
         "aliases": [
-          "svg2ts viewer",
-          "svg2ts"
+          "svgts viewer",
+          "svgts"
         ],
         "extensions": [
-          ".svg2ts"
+          ".svgts"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
       {
-        "language": "svg2ts",
-        "scopeName": "text.plain, text.plain.svg2ts",
-        "path": "./syntaxes/svg2ts.tmLanguage"
+        "language": "svgts",
+        "scopeName": "text.plain, text.plain.svgts",
+        "path": "./syntaxes/svgts.tmLanguage"
       }
     ],
     "commands": [
       {
-        "command": "extension.svg2ts-preview",
-        "title": "View svg2ts"
+        "command": "extension.svgts-preview",
+        "title": "View svgts"
       },
       {
-        "command": "extension.svg2ts-generate-from-dir",
+        "command": "extension.svgts-generate-from-dir",
         "title": "Create svgts module"
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "when": "resourceLangId == svg2ts",
-          "command": "extension.svg2ts-preview",
+          "when": "resourceLangId == svgts",
+          "command": "extension.svgts-preview",
           "group": "navigation"
         },
         {
-          "command": "extension.svg2ts-generate-from-dir",
-          "group": "svg2ts",
+          "command": "extension.svgts-generate-from-dir",
+          "group": "svgts",
           "when": "explorerResourceIsFolder"
         }
       ]

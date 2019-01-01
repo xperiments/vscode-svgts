@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, QueryList, ViewChildren, AfterViewInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, Input, QueryList, ViewChildren } from '@angular/core';
 import { IconsDataService } from '../services/icons-data.service';
 import { IconsService } from '../services/icons.service';
 import { SvgTsViewerIconComponent } from '../svgts-viewer-icon/svgts-viewer-icon.component';
@@ -17,7 +17,7 @@ export class SvgTsViewerIconsComponent implements AfterViewInit {
 
   public fileAdded(event) {
     const targetFile = event.target.files[0];
-    if (targetFile.name.indexOf('.svg2ts') !== -1) {
+    if (targetFile.name.indexOf('assets.svgts') !== -1) {
       const reader = new FileReader();
       reader.onload = () => {
         this.iconsData.addExternalFileIcons(JSON.parse(reader.result as string).files);

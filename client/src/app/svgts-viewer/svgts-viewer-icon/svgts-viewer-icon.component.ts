@@ -2,9 +2,9 @@ import { Component, HostBinding, Input, ChangeDetectionStrategy, ChangeDetectorR
 
 import { KeyboardService } from '../services/keyboard.service';
 import { IconsService } from '../services/icons.service';
-import { Svg2TsService } from '../services/svg2ts.service';
+import { SvgTsService } from '../services/svg-ts.service';
 import { SafeHtml } from '@angular/platform-browser';
-import { SVG2TSExtendedFile } from '../services/icons-data.service';
+import { SVGTSExtendedFile } from '../services/icons-data.service';
 @Component({
   selector: 'svgts-viewer-icon',
   templateUrl: './svgts-viewer-icon.component.html',
@@ -14,11 +14,11 @@ import { SVG2TSExtendedFile } from '../services/icons-data.service';
 export class SvgTsViewerIconComponent implements OnInit {
   @HostBinding('class.-detail') public detail = false;
   @HostBinding('class.-exported') public exported: boolean;
-  public iconFile: SVG2TSExtendedFile;
+  public iconFile: SVGTSExtendedFile;
   @HostBinding('class.-selected') public selected = false;
   public svgContents: SafeHtml;
 
-  @Input() public set icon(svgViewerFile: SVG2TSExtendedFile) {
+  @Input() public set icon(svgViewerFile: SVGTSExtendedFile) {
     this.iconFile = svgViewerFile;
     this.exported = this.iconFile.exported;
   }
@@ -29,7 +29,7 @@ export class SvgTsViewerIconComponent implements OnInit {
 
   constructor(
     private _keyboard: KeyboardService,
-    private _svg2ts: Svg2TsService,
+    private _svgTs: SvgTsService,
     private _cdr: ChangeDetectorRef,
     private _iconService: IconsService
   ) {}
@@ -47,7 +47,7 @@ export class SvgTsViewerIconComponent implements OnInit {
   }
 
   public getViewBox() {
-    return this._svg2ts.viewBoxString(this.iconFile);
+    return this._svgTs.viewBoxString(this.iconFile);
   }
 
   public hide() {
@@ -72,11 +72,11 @@ export class SvgTsViewerIconComponent implements OnInit {
   }
 
   public ngOnInit() {
-    this.svgContents = this._svg2ts.getInnerHtml(this.iconFile);
+    this.svgContents = this._svgTs.getInnerHtml(this.iconFile);
   }
 
   public render(context?: any) {
-    this.svgContents = this._svg2ts.getInnerHtml(this.iconFile, context);
+    this.svgContents = this._svgTs.getInnerHtml(this.iconFile, context);
 
     this.detectChanges();
   }
@@ -103,7 +103,7 @@ export class SvgTsViewerIconComponent implements OnInit {
   }
 
   public tint(baseColor: any): any {
-    this.svgContents = this._svg2ts.getTintInnerHtml(this.iconFile, baseColor);
+    this.svgContents = this._svgTs.getTintInnerHtml(this.iconFile, baseColor);
     this.detectChanges();
   }
 

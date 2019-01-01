@@ -17,7 +17,7 @@ export class SvgViewerTsFormComponent {
     current,
     currentComponent
   }: {
-    current: SVG2TSFile;
+    current: SVGTSFile;
     currentComponent: SvgTsViewerIconComponent;
   }) {
     const obj = current.contextDefaults;
@@ -38,7 +38,7 @@ export class SvgViewerTsFormComponent {
   }
 
   public traverse(
-    obj: SVG2TSFileTreeContext | { [s: string]: {} } | ArrayLike<{}>,
+    obj: SVGTSFileTreeContext | { [s: string]: {} } | ArrayLike<{}>,
     metadata: { [x: string]: { value: any } }
   ) {
     return Object['entries'](obj).reduce((acc, [key, value]) => {

@@ -1,8 +1,8 @@
 import { cssColors } from './css-colors';
 
-export type SVG2TSViewerContextUnits = 'px' | 'em' | 'rem' | 'vw' | 'vh' | 'deg' | '%';
+export type SVGTSViewerContextUnits = 'px' | 'em' | 'rem' | 'vw' | 'vh' | 'deg' | '%';
 
-export type SVG2TSViewerContextTypes =
+export type SVGTSViewerContextTypes =
   | 'integer'
   | 'undefined'
   | 'float'
@@ -14,15 +14,15 @@ export type SVG2TSViewerContextTypes =
   | 'text.long'
   | 'child';
 
-export interface SVG2TSViewerContext {
+export interface SVGTSViewerContext {
   label: string;
   range?: {
     max: number;
     min: number;
     step: number;
   };
-  type: SVG2TSViewerContextTypes;
-  unit?: SVG2TSViewerContextUnits;
+  type: SVGTSViewerContextTypes;
+  unit?: SVGTSViewerContextUnits;
   validation: { required: boolean };
   value: string | number;
 }
@@ -76,7 +76,7 @@ function traverseTree(obj: any) {
   }, {});
 }
 
-export function determineType(value: string, key: string): SVG2TSViewerContext {
+export function determineType(value: string, key: string): SVGTSViewerContext {
   value += '';
   const units = ['px', 'em', 'rem', 'vw', 'vh', 'deg', '%'];
   const numberValue = parseInt(value, 10);
@@ -84,10 +84,10 @@ export function determineType(value: string, key: string): SVG2TSViewerContext {
   const isNumber = isInt(numberValue);
   const isFloatNumber = isFloat(floatValue);
   const isNumeric = isNumber || isFloatNumber;
-  const unit: SVG2TSViewerContextUnits = value.replace(
+  const unit: SVGTSViewerContextUnits = value.replace(
     String(isNumber && !isFloatNumber ? numberValue : isFloatNumber ? floatValue : '-never-'),
     ''
-  ) as SVG2TSViewerContextUnits;
+  ) as SVGTSViewerContextUnits;
   const isNumericUnit = isNumber && units['includes'](unit);
   const isLongColor = /#[abcdefABCDEF0123456789]{6}/.exec(value) ? true : false;
   const isShortColor = !isLongColor && /#[abcdefABCDEF0123456789]{3}/.exec(value) ? true : false;

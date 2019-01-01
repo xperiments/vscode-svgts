@@ -1,68 +1,68 @@
-<svg width="100%" height="100%" class="svg2ts__sidebarLogo"><use href="#svg2tsIcon__logo" /></svg>
-<div class="svg2ts__sidebarNavbar">
-  <div class="svg2ts__sidebarNavbarIcon" title="Small Grid">
-    <svg (click)="showGrid(3)" [ngClass]="{ '-selected': gridSize === 3 }"><use href="#svg2tsIcon__grid1" /></svg>
+<svg width="100%" height="100%" class="svgTs__sidebarLogo"><use href="#svgTsIcon__logo" /></svg>
+<div class="svgTs__sidebarNavbar">
+  <div class="svgTs__sidebarNavbarIcon" title="Small Grid">
+    <svg (click)="showGrid(3)" [ngClass]="{ '-selected': gridSize === 3 }"><use href="#svgTsIcon__grid1" /></svg>
   </div>
-  <div class="svg2ts__sidebarNavbarIcon" title="Medium Grid">
-    <svg (click)="showGrid(4)" [ngClass]="{ '-selected': gridSize === 4 }"><use href="#svg2tsIcon__grid2" /></svg>
+  <div class="svgTs__sidebarNavbarIcon" title="Medium Grid">
+    <svg (click)="showGrid(4)" [ngClass]="{ '-selected': gridSize === 4 }"><use href="#svgTsIcon__grid2" /></svg>
   </div>
-  <div class="svg2ts__sidebarNavbarIcon" title="Big Grid">
-    <svg (click)="showGrid(5)" [ngClass]="{ '-selected': gridSize === 5 }"><use href="#svg2tsIcon__grid3" /></svg>
+  <div class="svgTs__sidebarNavbarIcon" title="Big Grid">
+    <svg (click)="showGrid(5)" [ngClass]="{ '-selected': gridSize === 5 }"><use href="#svgTsIcon__grid3" /></svg>
   </div>
   <div style="line-height: 16px; padding: 0 4px; opacity: .3;">|</div>
-  <div class="svg2ts__sidebarNavbarIcon" title="Select All">
-    <svg (click)="select('all')"><use href="#svg2tsIcon__selectAll" /></svg>
+  <div class="svgTs__sidebarNavbarIcon" title="Select All">
+    <svg (click)="select('all')"><use href="#svgTsIcon__selectAll" /></svg>
   </div>
-  <div class="svg2ts__sidebarNavbarIcon" title="Clear Selection">
-    <svg (click)="select('none')"><use href="#svg2tsIcon__selectNone" /></svg>
+  <div class="svgTs__sidebarNavbarIcon" title="Clear Selection">
+    <svg (click)="select('none')"><use href="#svgTsIcon__selectNone" /></svg>
   </div>
   <div style="width:100%"></div>
-  <div class="svg2ts__sidebarNavbarIcon" title="Show All">
+  <div class="svgTs__sidebarNavbarIcon" title="Show All">
     <svg (click)="colorMode('all')" [ngClass]="{ '-selected': this.icons.iconColorFilter$.value === 'all' }">
-      <use href="#svg2tsIcon__all" />
+      <use href="#svgTsIcon__all" />
     </svg>
   </div>
-  <div class="svg2ts__sidebarNavbarIcon" title="Show Single Color">
+  <div class="svgTs__sidebarNavbarIcon" title="Show Single Color">
     <svg
       (click)="colorMode('single')"
       [ngClass]="{
         '-selected': this.icons.iconColorFilter$.value === 'single'
       }"
     >
-      <use href="#svg2tsIcon__single" />
+      <use href="#svgTsIcon__single" />
     </svg>
   </div>
-  <div class="svg2ts__sidebarNavbarIcon" title="Show Multiple Color">
+  <div class="svgTs__sidebarNavbarIcon" title="Show Multiple Color">
     <svg
       (click)="colorMode('multiple')"
       [ngClass]="{
         '-selected': this.icons.iconColorFilter$.value === 'multiple'
       }"
     >
-      <use href="#svg2tsIcon__multiple" />
+      <use href="#svgTsIcon__multiple" />
     </svg>
   </div>
-  <div class="svg2ts__sidebarNavbarIcon" title="Show Dynamic">
+  <div class="svgTs__sidebarNavbarIcon" title="Show Dynamic">
     <svg
       (click)="colorMode('dynamic')"
       [ngClass]="{
         '-selected': this.icons.iconColorFilter$.value === 'dynamic'
       }"
     >
-      <use href="#svg2tsIcon__dynamic" />
+      <use href="#svgTsIcon__dynamic" />
     </svg>
   </div>
 </div>
 
-<div class="svg2ts__fieldSet -tree">
-  <div class="svg2ts__legend">
+<div class="svgTs__fieldSet -tree">
+  <div class="svgTs__legend">
     <div style="width:100%;">info</div>
     <div style="text-align: right;" *ngIf="!icons.currentIconFile?.contextDefaults && iconsData.isPluging">
-      <label class="svg2ts__label"
-        ><span class="svg2ts__labelTitle">exported</span>
+      <label class="svgTs__label"
+        ><span class="svgTs__labelTitle">exported</span>
         <input
           type="checkbox"
-          class="svg2ts__textInput"
+          class="svgTs__textInput"
           [checked]="icons.currentIconFile?.exported"
           (change)="toggleExport()"
         />
@@ -70,50 +70,50 @@
     </div>
   </div>
 
-  <label class="svg2ts__label" *ngFor="let key of infoKeys">
-    <span class="svg2ts__labelTitle">{{ key }}</span>
+  <label class="svgTs__label" *ngFor="let key of infoKeys">
+    <span class="svgTs__labelTitle">{{ key }}</span>
     <input
       type="text"
-      class="svg2ts__textInput -block"
+      class="svgTs__textInput -block"
       readonly
       [attr.value]="icons.currentIconFile ? icons.currentIconFile[key] : ''"
     />
-    <button class="svg2ts__button -small" (click)="copyToClipboard(icons.currentIconFile[key])">
-      <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svg2tsIcon__clipboard" /></svg>
+    <button class="svgTs__button -small" (click)="copyToClipboard(icons.currentIconFile[key])">
+      <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__clipboard" /></svg>
     </button>
   </label>
-  <label class="svg2ts__label">
-    <span class="svg2ts__labelTitle">viewbox</span>
+  <label class="svgTs__label">
+    <span class="svgTs__labelTitle">viewbox</span>
     <input
       type="text"
-      class="svg2ts__textInput -block"
+      class="svgTs__textInput -block"
       readonly
       [attr.value]="icons.currentIconFile ? getCurrentViewBox() : ''"
     />
-    <button class="svg2ts__button -small" (click)="copyToClipboard(getCurrentViewBox())">
-      <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svg2tsIcon__clipboard" /></svg>
+    <button class="svgTs__button -small" (click)="copyToClipboard(getCurrentViewBox())">
+      <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__clipboard" /></svg>
     </button>
   </label>
 </div>
-<div class="svg2ts__fieldSet -tree" *ngIf="icons.selected > 0">
-  <div class="svg2ts__legend">
+<div class="svgTs__fieldSet -tree" *ngIf="icons.selected > 0">
+  <div class="svgTs__legend">
     export <sup>({{ icons.selected }})</sup>
   </div>
-  <div class="svg2ts__sidebarButtonGroup -inline" *ngIf="icons.selectedAreSingle">
+  <div class="svgTs__sidebarButtonGroup -inline" *ngIf="icons.selectedAreSingle">
     <div [formGroup]="baseColorFormGroup" style="display: inline-block;">
-      <input type="color" class="svg2ts__textInput -big" readonly formControlName="baseColor" />
+      <input type="color" class="svgTs__textInput -big" readonly formControlName="baseColor" />
     </div>
   </div>
-  <div class="svg2ts__sidebarButtonGroup -inline">
-    <button (click)="export('png', 1)" class="svg2ts__button -big">png</button>
-    <button (click)="export('png', 2)" class="svg2ts__button -big">2x</button>
-    <button (click)="export('png', 3)" class="svg2ts__button -big">3x</button>
+  <div class="svgTs__sidebarButtonGroup -inline">
+    <button (click)="export('png', 1)" class="svgTs__button -big">png</button>
+    <button (click)="export('png', 2)" class="svgTs__button -big">2x</button>
+    <button (click)="export('png', 3)" class="svgTs__button -big">3x</button>
   </div>
-  <div class="svg2ts__sidebarButtonGroup -inline">
-    <button (click)="export('svg', 1)" class="svg2ts__button -big">svg</button>
+  <div class="svgTs__sidebarButtonGroup -inline">
+    <button (click)="export('svg', 1)" class="svgTs__button -big">svg</button>
   </div>
 
-  <ul class="svg2ts__sidebarSelectList">
+  <ul class="svgTs__sidebarSelectList">
     <li (click)="deselectByName(name)" *ngFor="let name of icons.selectedNames">{{ name }}</li>
   </ul>
 </div>

@@ -13,7 +13,7 @@
     display: none;
   }
 
-  .svg2ts__viewerIconContainer {
+  .svgTs__viewerIconContainer {
     cursor: pointer;
     height: 100%;
     left: 0;
@@ -22,7 +22,7 @@
     top: 0;
     width: 100%;
   }
-  .svg2ts__viewerIconMeta {
+  .svgTs__viewerIconMeta {
     background-color: rgba(#fff, 0.6);
     border-radius: 4px;
     bottom: 8px;
@@ -34,7 +34,7 @@
     user-select: none;
   }
 
-  .svg2ts__viewerIconSelection {
+  .svgTs__viewerIconSelection {
     cursor: pointer;
     display: none;
     fill: #aaa;
@@ -51,8 +51,8 @@
     box-shadow: 0 0 0 4px #d77120;
     z-index: 1;
 
-    .svg2ts__viewerIconMeta,
-    .svg2ts__viewerIconSelection {
+    .svgTs__viewerIconMeta,
+    .svgTs__viewerIconSelection {
       display: block;
     }
   }
@@ -80,7 +80,7 @@
   &.-selected {
     box-shadow: 0 0 0 4px #288edf !important;
 
-    .svg2ts__viewerIconSelection {
+    .svgTs__viewerIconSelection {
       display: block;
       fill: #000;
       &:hover {
@@ -94,7 +94,7 @@
   }
 }
 
-.svg2ts__export {
+.svgTs__export {
   fill: #000;
   left: 8px;
   position: absolute;

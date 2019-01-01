@@ -1,10 +1,8 @@
-<svg width="100%" height="100%" class="svg2ts__viewerIconsLogo"><use href="#svg2tsIcon__logo" /></svg>
+<svg width="100%" height="100%" class="svgTs__viewerIconsLogo"><use href="#svgTsIcon__logo" /></svg>
 <ng-container *ngIf="(iconsData.icons$ | async) as icons; else dragIcons">
-  <div class="svg2ts__viewerIconsContainer" [attr.size]="gridSize" *ngIf="(iconsData.icons$ | async) as icons">
+  <div class="svgTs__viewerIconsContainer" [attr.size]="gridSize" *ngIf="(iconsData.icons$ | async) as icons">
     <svgts-viewer-icon *ngFor="let icon of icons" [icon]="icon" [hidden]="!icon.visible"></svgts-viewer-icon>
   </div>
 </ng-container>
 
-<ng-template #dragIcons>
-  <input type="file" (change)="fileAdded($event)" class="svg2ts__viewerDropFile" />
-</ng-template>
+<ng-template #dragIcons> <input type="file" (change)="fileAdded($event)" class="svgTs__viewerDropFile" /> </ng-template>

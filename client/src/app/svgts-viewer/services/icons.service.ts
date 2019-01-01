@@ -3,8 +3,8 @@ import { saveAs } from 'file-saver';
 import * as JSZip from 'jszip';
 import { BehaviorSubject } from 'rxjs';
 import { SvgTsViewerIconComponent } from '../svgts-viewer-icon/svgts-viewer-icon.component';
-import { Svg2TsService } from './svg2ts.service';
-import { SVG2TSExtendedFile } from './icons-data.service';
+import { SvgTsService } from './svg-ts.service';
+import { SVGTSExtendedFile } from './icons-data.service';
 
 export type IconsServiceColorFilter = 'single' | 'multiple' | 'dynamic' | 'all';
 export type IconsServiceSelectFilter = 'all' | 'none';
@@ -41,7 +41,7 @@ export function pascalCase(str: string) {
 export class IconsService {
   public baseColor = null;
   public currentComponent: SvgTsViewerIconComponent;
-  public currentIconFile: SVG2TSExtendedFile;
+  public currentIconFile: SVGTSExtendedFile;
   public gridSize = 4;
   public iconColorFilter$: BehaviorSubject<IconsServiceColorFilter> = new BehaviorSubject<IconsServiceColorFilter>(
     'all'
@@ -57,7 +57,7 @@ export class IconsService {
   private _canvas: HTMLCanvasElement = document.createElement('canvas');
   private _canvasCtx: CanvasRenderingContext2D;
 
-  constructor(private _svg2ts: Svg2TsService) {
+  constructor(private _svgTs: SvgTsService) {
     this.selectFilter$.subscribe(mode => {
       if (mode === 'all') {
         this.selectAll();
@@ -108,13 +108,13 @@ export class IconsService {
       let svgContents = '';
 
       if (this.selectedAreSingle && icon.iconFile.colorMode === 'single' && !icon.iconFile.contextDefaults) {
-        svgContents = this._svg2ts.getTintInnerHtml(icon.iconFile, this.baseColor)[
+        svgContents = this._svgTs.getTintInnerHtml(icon.iconFile, this.baseColor)[
           'changingThisBreaksApplicationSecurity'
         ];
       } else {
-        svgContents = this._svg2ts.getInnerHtml(icon.iconFile)['changingThisBreaksApplicationSecurity'];
+        svgContents = this._svgTs.getInnerHtml(icon.iconFile)['changingThisBreaksApplicationSecurity'];
       }
-      const viewBox = this._svg2ts.viewBoxString(icon.iconFile);
+      const viewBox = this._svgTs.viewBoxString(icon.iconFile);
       svgOutput = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${icon
         .iconFile.viewBox.width * size}" height="${icon.iconFile.viewBox.height *
         size}" viewBox="${viewBox}">${svgContents}</svg>`;
@@ -139,7 +139,7 @@ export class IconsService {
           if (pending === 0) {
             zip.generateAsync({ type: 'blob' }).then(content => {
               // see FileSaver.js
-              saveAs(content, `svg2ts-${size}x-${+new Date()}.zip`);
+              saveAs(content, `svgts-${size}x-${+new Date()}.zip`);
             });
           }
         };
@@ -150,7 +150,7 @@ export class IconsService {
         if (pending === 0) {
           zip.generateAsync({ type: 'blob' }).then(content => {
             // see FileSaver.js
-            saveAs(content, `svg2ts-${size}x-${+new Date()}.zip`);
+            saveAs(content, `svgts-${size}x-${+new Date()}.zip`);
           });
         }
       }

@@ -26,7 +26,7 @@
   }
 }
 
-.svg2ts__sidebarNavbar {
+.svgTs__sidebarNavbar {
   background-color: #3c3c3d;
   border-bottom: 1px solid rgba(0, 0, 0, 0.4);
   display: inline-flex;
@@ -38,7 +38,7 @@
   top: 0;
   z-index: 1;
 
-  .svg2ts__sidebarNavbarIcon {
+  .svgTs__sidebarNavbarIcon {
     height: 24px;
 
     svg {
@@ -58,7 +58,7 @@
   }
 }
 
-.svg2ts__sidebarButtonGroup {
+.svgTs__sidebarButtonGroup {
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 5px;
   display: flex;
@@ -75,7 +75,7 @@
   }
 }
 
-.svg2ts__sidebarSelectList {
+.svgTs__sidebarSelectList {
   li {
     background-color: #288edf;
     border-radius: 4px;
@@ -101,11 +101,11 @@
   }
 }
 
-.svg2ts__sidebarSpacer {
+.svgTs__sidebarSpacer {
   height: 100%;
 }
 
-.svg2ts__sidebarLogo {
+.svgTs__sidebarLogo {
   bottom: 48px;
   color: hsl(0, 0%, 0%);
   fill: none;

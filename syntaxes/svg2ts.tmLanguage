@@ -3,10 +3,10 @@
 <plist version="1.0">
   <dict>
     <key>name</key>
-    <string>svg2ts viewer</string>
+    <string>svgts viewer</string>
     <key>fileTypes</key>
     <array>
-      <string>.svg2ts</string>
+      <string>.svgts</string>
     </array>
     <key>patterns</key>
     <array>
@@ -16,6 +16,6 @@
       </dict>
     </array>
     <key>scopeName</key>
-    <string>text.plain, text.plain.svg2ts</string>
+    <string>text.plain, text.plain.svgts</string>
   </dict>
 </plist>

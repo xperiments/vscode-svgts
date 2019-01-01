@@ -4,23 +4,23 @@ import { DomSanitizer } from '@angular/platform-browser';
 @Injectable({
   providedIn: 'root'
 })
-export class Svg2TsService {
+export class SvgTsService {
   constructor(private _sanitizer: DomSanitizer) {}
 
-  public determineColorMode(icon: SVG2TSFile): 'multiple' | 'single' {
+  public determineColorMode(icon: SVGTSFile): 'multiple' | 'single' {
     // tslint:disable-next-line:max-line-length
     const regexp = /rgb[a]?\((.*?)\)|#[abcdefABCDEF0123456789]{6}|#[abcdefABCDEF0123456789]{3}|aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkgrey|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkslategrey|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dimgrey|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|grey|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightgrey|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightslategrey|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|rebeccapurple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|slategrey|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen/g;
     const matches = icon.svg.match(regexp);
     return new Set(matches ? matches.map(match => match.replace(/ /g, '')) : null).size > 1 ? 'multiple' : 'single';
   }
 
-  public getInnerHtml(icon: SVG2TSFile, context?: any) {
+  public getInnerHtml(icon: SVGTSFile, context?: any) {
     return this._sanitizer.bypassSecurityTrustHtml(
       this.isDynamic(icon) ? this._getDynamicIcon(icon, context) : icon.svg
     );
   }
 
-  public getTintInnerHtml(icon: SVG2TSFile, baseColor: string) {
+  public getTintInnerHtml(icon: SVGTSFile, baseColor: string) {
     const regexp = /rgba\((.*?)\)|#[abcdefABCDEF0123456789]{6}|#[abcdefABCDEF0123456789]{3}/g;
     const matches = icon.svg.match(regexp);
     const colors = new Set(matches ? matches.map(match => match.replace(/ /g, '')) : null).size;
@@ -37,20 +37,20 @@ export class Svg2TsService {
     return this._sanitizer.bypassSecurityTrustHtml(svgOutput);
   }
 
-  public isDynamic(icon: SVG2TSFile) {
+  public isDynamic(icon: SVGTSFile) {
     return icon && icon.contextDefaults ? true : false;
   }
 
-  public viewBoxAttribute(icon: SVG2TSFile) {
+  public viewBoxAttribute(icon: SVGTSFile) {
     return `viewBox="${this.viewBoxString(icon)}"`;
   }
 
-  public viewBoxString(icon: SVG2TSFile) {
+  public viewBoxString(icon: SVGTSFile) {
     const { width, height, minx, miny } = icon.viewBox;
     return `${minx} ${miny} ${width} ${height}`;
   }
 
-  private _getDynamicIcon(iconFile: SVG2TSFile, context = JSON.parse(JSON.stringify(iconFile.contextDefaults))) {
+  private _getDynamicIcon(iconFile: SVGTSFile, context = JSON.parse(JSON.stringify(iconFile.contextDefaults))) {
     iconFile['context'] = context;
 
     const foundAttributes = iconFile.svg.match(/\[attr\.(.*?)]="(.*?)"/g);

@@ -4,7 +4,7 @@ import { FormGroup, FormControl } from '@angular/forms';
 @Component({
   selector: 'svgts-viewer-nested-form',
   templateUrl: 'svgts-viewer-nested-form.component.html',
-  styles: ['.svg2ts__viewerFormSpacer { margin-bottom:8px;}']
+  styles: ['.svgts__viewerFormSpacer { margin-bottom:8px;}']
 })
 export class SvgViewerTsNestedFormComponent {
   @Input() public nestedFormGroup: FormGroup;
