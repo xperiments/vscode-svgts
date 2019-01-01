@@ -27,7 +27,7 @@ export function activate(context: ExtensionContext) {
   };
 
   const previewAndCloseSrcDoc = async (document: TextDocument): Promise<void> => {
-    if (document.uri.toString().indexOf('.svg2ts') !== -1) {
+    if (document.uri.toString().indexOf('.svgts') !== -1) {
       vscode.commands.executeCommand('workbench.action.closeActiveEditor');
       setTimeout(() => {
         if (!revealIfAlreadyOpened(document.uri)) {
@@ -41,25 +41,25 @@ export function activate(context: ExtensionContext) {
     previewAndCloseSrcDoc(document);
   });
 
-  const previewCmd = vscode.commands.registerCommand('extension.svg2ts-preview', (uri: Uri) => {
+  const previewCmd = vscode.commands.registerCommand('extension.svgts-preview', (uri: Uri) => {
     if (!revealIfAlreadyOpened(uri)) {
       registerPanel(showPreview(context, uri));
     }
   });
 
-  const svg2tsModuleCmd = vscode.commands.registerCommand('extension.svg2ts-generate-from-dir', (source: Uri) => {
+  const svg2tsModuleCmd = vscode.commands.registerCommand('extension.svgts-generate-from-dir', (source: Uri) => {
     vscode.window
-      .showInputBox({ prompt: 'svg2ts module name', value: 'svg2ts' })
+      .showInputBox({ prompt: 'svgts module name', value: 'code-svgts' })
       .then((moduleName: string | undefined) => {
         const { exec } = require('child_process');
         exec(
           `cd ${source.fsPath} && svg2ts -i ./ -o ./../ᗢ-${path.basename(source.path)} -b angular -m ${moduleName}`,
           (err, stdout, stderr) => {
             if (err) {
-              vscode.window.showErrorMessage('svg2ts: Something was wrong while converting');
+              vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
               return;
             }
-            vscode.window.showInformationMessage(`svg2ts: Succesfull generated svg2ts ${moduleName} module`);
+            vscode.window.showInformationMessage(`vscode-svgts: Succesfull generated svgts ${moduleName} module`);
           }
         );
       });
@@ -141,5 +141,5 @@ function getLocalResourceRoots(context: ExtensionContext, resource: vscode.Uri):
 }
 
 export function deactivate() {
-  console.log('vscode-svg2ts deactivated');
+  console.log('vscode-svgts deactivated');
 }
