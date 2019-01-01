@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { SvgTsService } from './svg-ts.service';
 import { BehaviorSubject } from 'rxjs';
+import { SvgTsService } from './svg-ts.service';
 
 export interface SVGTSExtendedFile extends SVGTSFile {
   colorMode: 'single' | 'multiple';
@@ -11,6 +11,7 @@ export interface SVGTSExtendedFile extends SVGTSFile {
 
 const loadedIcons = window['svgts'] ? window['svgts'].icons.files : null;
 const exportedIcons: string[] = window['svgts'] ? window['svgts'].icons.exports : [];
+const moduleName: string = window['svgts'] ? window['svgts'].icons.module : 'vscode-svgts';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,8 @@ const exportedIcons: string[] = window['svgts'] ? window['svgts'].icons.exports 
 export class IconsDataService {
   public icons$ = new BehaviorSubject<SVGTSExtendedFile[]>(null);
   public isPluging = false;
+  public moduleName = moduleName;
+
   constructor(private _svgTs: SvgTsService) {
     if (loadedIcons) {
       this.isPluging = true;
