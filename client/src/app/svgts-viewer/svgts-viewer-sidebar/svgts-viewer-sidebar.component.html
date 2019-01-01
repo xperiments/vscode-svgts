@@ -57,7 +57,10 @@
 <div class="svgTs__fieldSet -tree" *ngIf="icons.currentComponent">
   <div class="svgTs__legend">
     <div style="width:100%;">info</div>
-    <div style="text-align: right;" *ngIf="!icons.currentIconFile?.contextDefaults && iconsData.isPluging">
+    <div
+      style="text-align: right; margin-right: 8px;"
+      *ngIf="!icons.currentIconFile?.contextDefaults && iconsData.isPluging"
+    >
       <label class="svgTs__label"
         ><span class="svgTs__labelTitle">exported</span>
         <input
