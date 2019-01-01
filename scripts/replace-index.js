@@ -10,4 +10,4 @@ const result = index
   .replace('<script></script>', '<script>' + js + '</script>');
 
 fs.writeFileSync(__dirname + '/../out/src/index.html', result, 'utf8');
-fs.writeFileSync(__dirname + '/../docs/index.html', result.replace('__icons__', 'null'), 'utf8');
+fs.writeFileSync(__dirname + '/../docs/index.html', result.replace('window.svgts = { icons: __icons__ };', ''), 'utf8');
