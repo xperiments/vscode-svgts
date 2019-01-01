@@ -193,5 +193,5 @@ export function determineType(value: string, key: string): SVG2TSViewerContext {
 }
 
 export function getContextMetadata(context: any) {
-  return traverseTree(context);
+  return traverseTree(JSON.parse(JSON.stringify(context)));
 }
