@@ -8,7 +8,7 @@ export class KeyboardService {
 
   constructor() {
     document.addEventListener('keydown', (event: KeyboardEvent) => {
-      this.cmdDown = event.key.charCodeAt(0) === 91;
+      this.cmdDown = event.getModifierState('Meta');
     });
 
     document.addEventListener('keyup', (event: KeyboardEvent) => {

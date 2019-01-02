@@ -83,7 +83,7 @@ export class SvgTsDragInputComponent implements ControlValueAccessor, OnInit {
   }
 
   public onKeyPress($event: KeyboardEvent) {
-    return $event.key.charCodeAt(0) !== 13;
+    return $event.key !== 'Enter';
   }
 
   public registerOnChange(fn: any): void {
