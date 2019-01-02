@@ -7,72 +7,6 @@ import fs = require('fs');
 
 const indexHtmlFile = fs.readFileSync(__dirname + '/index.html', 'utf8');
 
-export function activate(context: ExtensionContext) {
-  const openedPanels: WebviewPanel[] = [];
-
-  const revealIfAlreadyOpened = (uri: Uri): boolean => {
-    const opened = openedPanels.find(panel => panel.viewType === uri.fsPath);
-    if (!opened) {
-      return false;
-    }
-    opened.reveal(opened.viewColumn);
-    return true;
-  };
-
-  const registerPanel = (panel: WebviewPanel): void => {
-    panel.onDidDispose(() => {
-      openedPanels.splice(openedPanels.indexOf(panel), 1);
-    });
-    openedPanels.push(panel);
-  };
-
-  const previewAndCloseSrcDoc = async (document: TextDocument): Promise<void> => {
-    if (document.uri.toString().indexOf('.svgts') !== -1) {
-      vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-      setTimeout(() => {
-        if (!revealIfAlreadyOpened(document.uri)) {
-          registerPanel(showPreview(context, document.uri));
-        }
-      }, 0);
-    }
-  };
-
-  const openedEvent = vscode.workspace.onDidOpenTextDocument((document: TextDocument) => {
-    previewAndCloseSrcDoc(document);
-  });
-
-  const previewCmd = vscode.commands.registerCommand('extension.svgts-preview', (uri: Uri) => {
-    if (!revealIfAlreadyOpened(uri)) {
-      registerPanel(showPreview(context, uri));
-    }
-  });
-
-  const svg2tsModuleCmd = vscode.commands.registerCommand('extension.svgts-generate-from-dir', (source: Uri) => {
-    vscode.window
-      .showInputBox({ prompt: 'svgts module name', value: 'code-svgts' })
-      .then((moduleName: string | undefined) => {
-        const { exec } = require('child_process');
-        exec(
-          `cd ${source.fsPath} && svg2ts -i ./ -o ./../ᗢ-${path.basename(source.path)} -b angular -m ${moduleName}`,
-          (err, stdout, stderr) => {
-            if (err) {
-              vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
-              return;
-            }
-            vscode.window.showInformationMessage(`vscode-svgts: Succesfull generated svgts ${moduleName} module`);
-          }
-        );
-      });
-  });
-
-  // If pdf file is already opened when load workspace.
-  if (vscode.window.activeTextEditor) {
-    previewAndCloseSrcDoc(vscode.window.activeTextEditor.document);
-  }
-
-  context.subscriptions.push(openedEvent, previewCmd, svg2tsModuleCmd);
-}
-
 function showPreview(context: ExtensionContext, uri: Uri): WebviewPanel {
   const configContents = fs.readFileSync(uri.fsPath, 'utf8');
   const basename = path.basename(uri.fsPath);
@@ -138,6 +72,72 @@ function getLocalResourceRoots(context: ExtensionContext, resource: vscode.Uri):
   }
 
   return baseRoots;
+}
+
+export function activate(context: ExtensionContext) {
+  const openedPanels: WebviewPanel[] = [];
+
+  const revealIfAlreadyOpened = (uri: Uri): boolean => {
+    const opened = openedPanels.find(panel => panel.viewType === uri.fsPath);
+    if (!opened) {
+      return false;
+    }
+    opened.reveal(opened.viewColumn);
+    return true;
+  };
+
+  const registerPanel = (panel: WebviewPanel): void => {
+    panel.onDidDispose(() => {
+      openedPanels.splice(openedPanels.indexOf(panel), 1);
+    });
+    openedPanels.push(panel);
+  };
+
+  const previewAndCloseSrcDoc = async (document: TextDocument): Promise<void> => {
+    if (document.uri.toString().indexOf('.svgts') !== -1) {
+      vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+      setTimeout(() => {
+        if (!revealIfAlreadyOpened(document.uri)) {
+          registerPanel(showPreview(context, document.uri));
+        }
+      }, 0);
+    }
+  };
+
+  const openedEvent = vscode.workspace.onDidOpenTextDocument((document: TextDocument) => {
+    previewAndCloseSrcDoc(document);
+  });
+
+  const previewCmd = vscode.commands.registerCommand('extension.svgts-preview', (uri: Uri) => {
+    if (!revealIfAlreadyOpened(uri)) {
+      registerPanel(showPreview(context, uri));
+    }
+  });
+
+  const svg2tsModuleCmd = vscode.commands.registerCommand('extension.svgts-generate-from-dir', (source: Uri) => {
+    vscode.window
+      .showInputBox({ prompt: 'svgts module name', value: 'code-svgts' })
+      .then((moduleName: string | undefined) => {
+        const { exec } = require('child_process');
+        exec(
+          `cd ${source.fsPath} && svg2ts -i ./ -o ./../ᗢ-${path.basename(source.path)} -b angular -m ${moduleName}`,
+          (err, stdout, stderr) => {
+            if (err) {
+              vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
+              return;
+            }
+            vscode.window.showInformationMessage(`vscode-svgts: Succesfull generated svgts ${moduleName} module`);
+          }
+        );
+      });
+  });
+
+  // If pdf file is already opened when load workspace.
+  if (vscode.window.activeTextEditor) {
+    previewAndCloseSrcDoc(vscode.window.activeTextEditor.document);
+  }
+
+  context.subscriptions.push(openedEvent, previewCmd, svg2tsModuleCmd);
 }
 
 export function deactivate() {
