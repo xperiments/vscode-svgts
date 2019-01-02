@@ -129,6 +129,7 @@ export class IconsService {
       if (element.selected) {
         acc.add(element.icon.colorMode);
         if (element.icon.contextDefaults) {
+          // tslint:disable-next-line
           contextDefaults = true;
         }
       }
