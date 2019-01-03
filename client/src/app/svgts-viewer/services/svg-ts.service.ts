@@ -16,7 +16,7 @@ export class SvgTsService {
 
   public getInnerHtml(icon: SVGTSFile, context?: any) {
     return this._sanitizer.bypassSecurityTrustHtml(
-      this.isDynamic(icon) ? this._getDynamicIcon(icon, context) : icon.svg
+      this.isDynamic(icon) ? this._dynamicIconHtml(icon, context) : icon.svg
     );
   }
 
@@ -50,46 +50,59 @@ export class SvgTsService {
     return `${minx} ${miny} ${width} ${height}`;
   }
 
-  private _getDynamicIcon(iconFile: SVGTSFile, context = JSON.parse(JSON.stringify(iconFile.contextDefaults))) {
+  private _dynamicIconHtml(iconFile: SVGTSFile, context = JSON.parse(JSON.stringify(iconFile.contextDefaults))) {
     iconFile['context'] = context;
-
-    const foundAttributes = iconFile.svg.match(/\[attr\.(.*?)]="(.*?)"/g);
-
-    let svg = iconFile.svg.replace(
-      /\[attr.xlink:href]="getXlinkBase\('(.*?)'\)"/g,
-      `xlink:href="#$1-${iconFile.contextDefaults.uuid}"`
-    );
+    const svgSource = iconFile.svg;
+    const foundAttributes = svgSource.match(/\[attr\.(.*?)]="(.*?)"/g);
 
     if (foundAttributes) {
-      svg = foundAttributes.reduce((acc, value) => {
-        const [, attribute, target] = value.match(/\[attr\.(.*?)]="(.*?)"/);
-
-        if (target.indexOf('context.uuid') !== -1 || target === 'viewBox') {
-          if (target === 'viewBox') {
-            acc = acc.replace(value, this.viewBoxAttribute(iconFile));
-          } else {
-            acc = acc.replace(/\\'(.+?)\\'\+context.uuid"/g, '$10"');
-            acc = acc.replace(/\\'(.+?)\\'\+context.uuid\+\\'(.+?)\\'/gm, '$10$2');
-          }
+      const result = foundAttributes.reduce((svgOutput, foundAttribute) => {
+        let targetAttribute = foundAttribute;
+        if (targetAttribute.indexOf('context.uuid') !== -1) {
+          targetAttribute = targetAttribute
+            .replace(/\\'(.+?)\\'\+context.uuid\+\\'(.+?)\\'/gm, '$10$2')
+            .replace(/\\'(.+?)\\'\+context.uuid/g, '$10');
+        }
+        if (targetAttribute.indexOf('getURLBase') !== -1) {
+          targetAttribute = targetAttribute.replace(/getURLBase\((.*?)\)/g, 'url($1)');
+        }
+        const [, attribute, target] = targetAttribute.match(/\[attr\.(.*?)]="(.*?)"/);
+        if (attribute === 'viewBox' && target === 'viewBox') {
+          svgOutput = svgOutput.replace(foundAttribute, this.viewBoxAttribute(iconFile));
+          return svgOutput;
         } else {
           const dest = target.split('.').reduce((o, i) => o[i], iconFile);
-          acc = acc.replace(value, `${attribute}="${dest}"`);
+
+          if (dest) {
+            svgOutput = svgOutput.replace(foundAttribute, `${attribute}="${dest}"`);
+          } else {
+            if (attribute === 'class') {
+              svgOutput = svgOutput.replace(foundAttribute, `class="${target}"`);
+            } else {
+              if (target.indexOf('context.') === 0) {
+                const destProp = target.split('.').reduce((o, i) => o[i], iconFile);
+                svgOutput = svgOutput.replace(foundAttribute, `${attribute}="${destProp}"`);
+              } else {
+                svgOutput = svgOutput.replace(foundAttribute, `${attribute}="${target.replace(/^context\./, '')}"`);
+              }
+            }
+          }
+
+          return svgOutput;
         }
+      }, svgSource);
 
-        return acc;
-      }, svg);
+      const foundContexts = result.match(/{{(.*?)}}/g);
+      if (foundContexts) {
+        return foundContexts.reduce((acc, value) => {
+          const target = value.match(/{{(.*?)}}/)[1].replace(/^context\./, '');
+          const dest = target.split('.').reduce((o, i) => o[i], iconFile.context);
+          return acc.replace(value, dest as string);
+        }, result);
+      }
+
+      return result;
     }
-
-    const foundContexts = svg.match(/{{(.*?)}}/g);
-    if (foundContexts) {
-      return foundContexts.reduce((acc, value) => {
-        const target = value.match(/{{(.*?)}}/)[1];
-        const dest = target.split('.').reduce((o, i) => o[i], iconFile);
-        return acc.replace(value, dest);
-      }, svg);
-    }
-
-    svg = svg.replace(/\[attr.(.+?)\]/g, '$1');
-    return svg;
+    return svgSource;
   }
 }
