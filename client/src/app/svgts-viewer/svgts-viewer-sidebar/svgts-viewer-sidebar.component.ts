@@ -36,10 +36,24 @@ export class SvgTsViewerSidebarComponent implements OnInit {
     this.icons.iconColorFilter$.next(mode);
   }
 
-  public copyIconTemplate() {
-    this.copyToClipboard(
-      `<${this.iconsData.moduleName} icon="${this.icons.currentIconFile.name}"></${this.iconsData.moduleName}>`
-    );
+  public copyIcon(mode: 'angular' | 'css' | 'svg') {
+    const svgIcon = this.icons.currentComponent.svgIcon;
+    const iconFile = this.icons.currentIconFile;
+    const moduleName = this.iconsData.moduleName;
+    switch (mode) {
+      case 'angular': {
+        this.copyToClipboard(`<${moduleName} icon="${iconFile.name}"></${moduleName}>`);
+        break;
+      }
+      case 'svg': {
+        this.copyToClipboard(this._svgTs.getIconSvg(iconFile, svgIcon));
+        break;
+      }
+      case 'css': {
+        this.copyToClipboard(this._svgTs.getIconEncodedUri(iconFile, svgIcon));
+        break;
+      }
+    }
   }
 
   public copyToClipboard(value: string | {}) {

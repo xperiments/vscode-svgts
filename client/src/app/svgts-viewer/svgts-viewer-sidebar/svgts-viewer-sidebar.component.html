@@ -56,13 +56,14 @@
 
 <div class="svgTs__fieldSet -tree" *ngIf="icons.currentComponent">
   <div class="svgTs__legend">
-    <div style="width:100%;">info</div>
+    <div style="width:100%;">current</div>
     <div
       style="text-align: right; margin-right: 8px;"
+      class="svgTs__sidebarButtonGroup"
       *ngIf="!icons.currentIconFile?.contextDefaults && iconsData.isPluging"
     >
       <label class="svgTs__label"
-        ><span class="svgTs__labelTitle">exported</span>
+        ><span class="svgTs__labelTitle">bundle</span>
         <input
           type="checkbox"
           class="svgTs__textInput"
@@ -71,35 +72,39 @@
         />
       </label>
     </div>
-    <button class="svgTs__button -small" (click)="copyIconTemplate()">
-      <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__angular" /></svg>
-    </button>
+    <div class="svgTs__sidebarButtonGroup">
+      <button class="svgTs__button -small" (click)="copyIcon('angular')" title="Copy Angular component">
+        <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__angular" /></svg>
+      </button>
+      <button class="svgTs__button -small" (click)="copyIcon('svg')" title="Copy svg code">
+        <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__svg" /></svg>
+      </button>
+      <button class="svgTs__button -small" (click)="copyIcon('css')" title="Copy background encoded svg css">
+        <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__css3" /></svg>
+      </button>
+    </div>
   </div>
+  <div>
+    <label class="svgTs__label" *ngFor="let key of infoKeys">
+      <span class="svgTs__labelTitle">{{ key }}</span>
+      <input
+        type="text"
+        class="svgTs__textInput -block"
+        readonly
+        [attr.value]="icons.currentIconFile ? icons.currentIconFile[key] : ''"
+      />
+    </label>
 
-  <label class="svgTs__label" *ngFor="let key of infoKeys">
-    <span class="svgTs__labelTitle">{{ key }}</span>
-    <input
-      type="text"
-      class="svgTs__textInput -block"
-      readonly
-      [attr.value]="icons.currentIconFile ? icons.currentIconFile[key] : ''"
-    />
-    <button class="svgTs__button -small" (click)="copyToClipboard(icons.currentIconFile[key])">
-      <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__clipboard" /></svg>
-    </button>
-  </label>
-  <label class="svgTs__label">
-    <span class="svgTs__labelTitle">viewbox</span>
-    <input
-      type="text"
-      class="svgTs__textInput -block"
-      readonly
-      [attr.value]="icons.currentIconFile ? getCurrentViewBox() : ''"
-    />
-    <button class="svgTs__button -small" (click)="copyToClipboard(getCurrentViewBox())">
-      <svg width="100%" height="100%" fill="#c6c8c8"><use href="#svgTsIcon__clipboard" /></svg>
-    </button>
-  </label>
+    <label class="svgTs__label">
+      <span class="svgTs__labelTitle">viewbox</span>
+      <input
+        type="text"
+        class="svgTs__textInput -block"
+        readonly
+        [attr.value]="icons.currentIconFile ? getCurrentViewBox() : ''"
+      />
+    </label>
+  </div>
 </div>
 <div class="svgTs__fieldSet -tree" *ngIf="icons.selected > 0">
   <div class="svgTs__legend">
