@@ -278,8 +278,9 @@ export class IconsService {
         svgContents = this._svgTs.getInnerHtml(icon.iconFile)['changingThisBreaksApplicationSecurity'];
       }
       const viewBox = this._svgTs.viewBoxString(icon.iconFile);
-      svgOutput = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${icon
-        .iconFile.viewBox.width * size}" height="${icon.iconFile.viewBox.height *
+      svgOutput = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="${
+        icon.iconFile.svgHash
+      }-0" width="${icon.iconFile.viewBox.width * size}" height="${icon.iconFile.viewBox.height *
         size}" viewBox="${viewBox}">${svgContents}</svg>`;
 
       zip.file(icon.iconFile.name + '.svg', svgOutput);
