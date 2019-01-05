@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { SVGTSExtendedFile } from './icons-data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +15,37 @@ export class SvgTsService {
     return new Set(matches ? matches.map(match => match.replace(/ /g, '')) : null).size > 1 ? 'multiple' : 'single';
   }
 
+  public getIconEncodedUri(iconFile: SVGTSExtendedFile, iconElement: ElementRef) {
+    const content = this.getIconSvg(iconFile, iconElement)
+      .replace(/(\r\n|\n|\r)/gm, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/^\s+|\s+$/g, '')
+      // tslint:disable-next-line:quotemark
+      .replace(/\"/gi, "'")
+      .replace(/%/gi, '%25')
+      .replace(/#/gi, '%23')
+      .replace(/</gi, '%3C')
+      .replace(/>/gi, '%3E')
+      .replace(/%3E %3C/gi, '%3E%3C');
+
+    return `.${iconFile.name} {
+  width: ${iconFile.viewBox.width}px;
+  height: ${iconFile.viewBox.height}px;
+  background-image: url("data:image/svg+xml;charset=utf8,${content}");
+}`;
+  }
+
+  public getIconSvg(iconFile: SVGTSExtendedFile, iconElement: ElementRef) {
+    return new XMLSerializer()
+      .serializeToString(
+        iconFile.contextDefaults ? iconElement.nativeElement.querySelector('svg') : iconElement.nativeElement
+      )
+      .replace(/\s_ngcontent-.+?=(""|"(.+?)?")/g, '');
+  }
+
   public getInnerHtml(icon: SVGTSFile, context?: any) {
     return this._sanitizer.bypassSecurityTrustHtml(
-      this.isDynamic(icon) ? this._dynamicIconHtml(icon, context) : icon.svg
+      this.isDynamic(icon) ? this._dynamicIconHtml(icon, context) : this._staticIconHtml(icon)
     );
   }
 
@@ -104,5 +133,9 @@ export class SvgTsService {
       return result;
     }
     return svgSource;
+  }
+
+  private _staticIconHtml(iconFile: SVGTSFile) {
+    return iconFile.svg.replace(/{{uuid}}/g, '0').replace('<svg ', `<svg class="${iconFile.svgHash}" `);
   }
 }
