@@ -4,9 +4,18 @@
   (dblclick)="showDetail()"
   title="info.......(click)&#013;detail....(dblclick)&#013;select...(⌘+click)"
 >
-  <svg width="100%" height="100%" [attr.viewBox]="getViewBox()" [innerHTML]="svgContents"></svg>
+  <svg
+    height="100%"
+    width="100%"
+    [attr.class]="icon.svgHash + '-0'"
+    [attr.viewBox]="getViewBox()"
+    [innerHTML]="svgContents"
+    #svgIcon
+  ></svg>
 </div>
+
 <span class="svgTs__viewerIconMeta">{{ iconFile.viewBox.width }}x{{ iconFile.viewBox.height }}</span>
+
 <svg width="24" height="24" class="svgTs__viewerIconSelection" (click)="toggleSelection()">
   <use xlink:href="#svgTsIcon__check"></use>
 </svg>

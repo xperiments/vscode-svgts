@@ -1,10 +1,19 @@
-import { Component, HostBinding, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
-
-import { KeyboardService } from '../services/keyboard.service';
-import { IconsService } from '../services/icons.service';
-import { SvgTsService } from '../services/svg-ts.service';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostBinding,
+  Input,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import { SafeHtml } from '@angular/platform-browser';
 import { SVGTSExtendedFile } from '../services/icons-data.service';
+import { IconsService } from '../services/icons.service';
+import { KeyboardService } from '../services/keyboard.service';
+import { SvgTsService } from '../services/svg-ts.service';
+
 @Component({
   selector: 'svgts-viewer-icon',
   templateUrl: './svgts-viewer-icon.component.html',
@@ -17,6 +26,7 @@ export class SvgTsViewerIconComponent implements OnInit {
   public iconFile: SVGTSExtendedFile;
   @HostBinding('class.-selected') public selected = false;
   public svgContents: SafeHtml;
+  @ViewChild('svgIcon') public svgIcon: ElementRef;
 
   @Input() public set icon(svgViewerFile: SVGTSExtendedFile) {
     this.iconFile = svgViewerFile;
