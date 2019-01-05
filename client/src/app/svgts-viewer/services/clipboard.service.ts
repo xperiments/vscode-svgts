@@ -4,9 +4,9 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ClipboardService {
-  private _hiddenInput: HTMLInputElement;
+  private _hiddenInput: HTMLTextAreaElement;
   constructor() {
-    this._hiddenInput = document.createElement('input');
+    this._hiddenInput = document.createElement('textarea');
     this._hiddenInput.setAttribute('style', 'position:absolute; clip:rect(0 0 0 0);');
     document.body.appendChild(this._hiddenInput);
   }
