@@ -2,63 +2,27 @@
 
 import * as vscode from 'vscode';
 import { ExtensionContext, TextDocument, Uri, WebviewPanel } from 'vscode';
+import { fileWatcher as watchFileChanges } from './file-watcher';
 import path = require('path');
 import fs = require('fs');
 
-const indexHtmlFile = fs.readFileSync(__dirname + '/index.html', 'utf8');
-
-function showPreview(context: ExtensionContext, uri: Uri): WebviewPanel {
-  const configContents = fs.readFileSync(uri.fsPath, 'utf8');
-  const basename = path.basename(uri.fsPath);
-  const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : 1;
-  const panel = vscode.window.createWebviewPanel(
-    uri.fsPath, // treated as identity
-    basename,
-    column,
-    {
-      enableScripts: true,
-      retainContextWhenHidden: true,
-      localResourceRoots: getLocalResourceRoots(context, uri)
-    }
-  );
-
-  panel.webview.html = indexHtmlFile.replace('__icons__', configContents);
-  // Handle messages from the webview
-  panel.webview.onDidReceiveMessage(
-    message => {
-      switch (message.command) {
-        case 'alert':
-          vscode.window.showInformationMessage(message.text);
-          return;
-        case 'updateExports':
-          const exportClasses = message.exports;
-          const assets = message.assets;
-
-          const assetsTs = `import {\n${exportClasses.join(',\n  ')}
-} from '../assets';
-
-export const assetsMap = { ${exportClasses
-            .map(asset => {
-              return `[${asset}.name]: ${asset}`;
-            })
-            .join(',\n  ')}
-};
-`;
-
-          // update assets index
-          fs.writeFileSync(path.dirname(uri.fsPath) + '/components/assets.ts', assetsTs, 'utf8');
-
-          const currentConfig = JSON.parse(configContents);
-          currentConfig.exports = assets;
-          fs.writeFileSync(uri.fsPath, JSON.stringify(currentConfig, null, 2), 'utf8');
-          return;
+const deleteFolderRecursive = path => {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function(file, index) {
+      var curPath = path + '/' + file;
+      if (fs.lstatSync(curPath).isDirectory()) {
+        // recurse
+        deleteFolderRecursive(curPath);
+      } else {
+        // delete file
+        fs.unlinkSync(curPath);
       }
-    },
-    undefined,
-    context.subscriptions
-  );
-  return panel;
-}
+    });
+    fs.rmdirSync(path);
+  }
+};
+
+const indexHtmlFile = fs.readFileSync(__dirname + '/index.html', 'utf8');
 
 function getLocalResourceRoots(context: ExtensionContext, resource: vscode.Uri): vscode.Uri[] {
   const baseRoots = [vscode.Uri.file(context.extensionPath)];
@@ -77,6 +41,11 @@ function getLocalResourceRoots(context: ExtensionContext, resource: vscode.Uri):
 export function activate(context: ExtensionContext) {
   const openedPanels: WebviewPanel[] = [];
 
+  const openPanel = uri => {
+    if (!revealIfAlreadyOpened(uri)) {
+      registerPanel(showPreview(context, uri));
+    }
+  };
   const revealIfAlreadyOpened = (uri: Uri): boolean => {
     const opened = openedPanels.find(panel => panel.viewType === uri.fsPath);
     if (!opened) {
@@ -87,6 +56,9 @@ export function activate(context: ExtensionContext) {
   };
 
   const registerPanel = (panel: WebviewPanel): void => {
+    if (!panel) {
+      return;
+    }
     panel.onDidDispose(() => {
       openedPanels.splice(openedPanels.indexOf(panel), 1);
     });
@@ -97,10 +69,8 @@ export function activate(context: ExtensionContext) {
     if (document.uri.toString().indexOf('.svgts') !== -1) {
       vscode.commands.executeCommand('workbench.action.closeActiveEditor');
       setTimeout(() => {
-        if (!revealIfAlreadyOpened(document.uri)) {
-          registerPanel(showPreview(context, document.uri));
-        }
-      }, 0);
+        openPanel(document.uri);
+      }, 300);
     }
   };
 
@@ -109,9 +79,7 @@ export function activate(context: ExtensionContext) {
   });
 
   const previewCmd = vscode.commands.registerCommand('extension.svgts-preview', (uri: Uri) => {
-    if (!revealIfAlreadyOpened(uri)) {
-      registerPanel(showPreview(context, uri));
-    }
+    openPanel(uri);
   });
 
   const svg2tsModuleCmd = vscode.commands.registerCommand('extension.svgts-generate-from-dir', (source: Uri) => {
@@ -132,12 +100,105 @@ export function activate(context: ExtensionContext) {
       });
   });
 
+  const svg2tsPreviewDirectory = vscode.commands.registerCommand('extension.svgts-preview-dir', (source: Uri) => {
+    const { exec } = require('child_process');
+
+    const extensionOutputPath = context.storagePath;
+    const previewPath = path.join(extensionOutputPath, '/svg-ts-preview/svg-ts-preview.svgts');
+    const openPath = vscode.Uri.file(previewPath);
+
+    exec(
+      `svg2ts -i "${source.fsPath}" -o "${extensionOutputPath}" -b angular -m svg-ts-preview`,
+      (err, stdout, stderr) => {
+        if (err) {
+          vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
+          return;
+        }
+
+        if (!revealIfAlreadyOpened(openPath)) {
+          registerPanel(showPreview(context, openPath, source));
+        }
+      }
+    );
+  });
+  let count = 0;
+  function showPreview(context: ExtensionContext, uri: Uri, sourceDir?: Uri): WebviewPanel {
+    if (uri.fsPath.includes('.git')) {
+      return;
+    }
+
+    const configContents = fs.readFileSync(uri.fsPath, 'utf8');
+    const basename = path.basename(uri.fsPath);
+    const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : 1;
+    const panel = vscode.window.createWebviewPanel(
+      uri.fsPath, // treated as identity
+      basename,
+      column,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: getLocalResourceRoots(context, uri)
+      }
+    );
+
+    if (!panel) {
+      return;
+    }
+    panel.webview.html = indexHtmlFile.replace('__icons__', configContents);
+    // Handle messages from the webview
+    panel.webview.onDidReceiveMessage(
+      message => {
+        switch (message.command) {
+          case 'updateExports':
+            const exportClasses = message.exports;
+            const assets = message.assets;
+
+            const assetsTs = `import {\n${exportClasses.join(',\n  ')}
+} from '../assets';
+
+export const assetsMap = { ${exportClasses
+              .map(asset => {
+                return `[${asset}.name]: ${asset}`;
+              })
+              .join(',\n  ')}
+};
+`;
+
+            // update assets index
+            fs.writeFileSync(path.dirname(uri.fsPath) + '/components/assets.ts', assetsTs, 'utf8');
+
+            const currentConfig = JSON.parse(configContents);
+            currentConfig.exports = assets;
+            fs.writeFileSync(uri.fsPath, JSON.stringify(currentConfig, null, 2), 'utf8');
+            return;
+        }
+      },
+      undefined,
+      context.subscriptions
+    );
+
+    const { promise, watcher } = watchFileChanges(uri.fsPath);
+
+    promise.then((watcher: fs.FSWatcher) => {
+      panel.dispose();
+      openPanel(uri);
+    });
+
+    panel.onDidDispose(() => {
+      console.log('uuuuu');
+      console.log(watcher);
+      console.log('uuuuu');
+      watcher.close();
+    });
+    return panel;
+  }
+
   // If pdf file is already opened when load workspace.
   if (vscode.window.activeTextEditor) {
     previewAndCloseSrcDoc(vscode.window.activeTextEditor.document);
   }
 
-  context.subscriptions.push(openedEvent, previewCmd, svg2tsModuleCmd);
+  context.subscriptions.push(openedEvent, previewCmd, svg2tsModuleCmd, svg2tsPreviewDirectory);
 }
 
 export function deactivate() {
