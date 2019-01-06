@@ -2,10 +2,10 @@
   "name": "vscode-svgts",
   "displayName": "vscode-svgts",
   "description": "Display svgts file in VSCode.",
-  "version": "0.1.0",
+  "version": "0.1.14",
   "publisher": "xperiments",
   "engines": {
-    "vscode": "^1.23.0"
+    "vscode": "^1.30.0"
   },
   "categories": [
     "Programming Languages"
@@ -26,7 +26,8 @@
   "activationEvents": [
     "onLanguage:svgts",
     "onCommand:extension.svgts-preview",
-    "onCommand:extension.svgts-generate-from-dir"
+    "onCommand:extension.svgts-generate-from-dir",
+    "onCommand:extension.svgts-preview-dir"
   ],
   "main": "./out/src/extension",
   "contributes": {
@@ -53,24 +54,38 @@
     "commands": [
       {
         "command": "extension.svgts-preview",
-        "title": "View svgts"
+        "title": "ᗢ Browse SVG icons"
       },
       {
         "command": "extension.svgts-generate-from-dir",
-        "title": "Create svgts module"
+        "title": "ᗢ Generate SVG ng-module"
+      },
+      {
+        "command": "extension.svgts-preview-dir",
+        "title": "ᗢ Browse SVG icons"
       }
     ],
     "menus": {
       "explorer/context": [
         {
-          "when": "resourceLangId == svgts",
-          "command": "extension.svgts-preview",
-          "group": "navigation"
+          "command": "extension.svgts-generate-from-dir",
+          "group": "svgts",
+          "when": "explorerResourceIsFolder"
         },
         {
           "command": "extension.svgts-generate-from-dir",
           "group": "svgts",
+          "when": "resourceLangId == svg"
+        },
+        {
+          "command": "extension.svgts-preview-dir",
+          "group": "svgts",
           "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "extension.svgts-preview-dir",
+          "group": "svgts",
+          "when": "resourceLangId == svg"
         }
       ]
     }
@@ -83,7 +98,8 @@
     "client": "./scripts/package-client.sh"
   },
   "dependencies": {
-    "vscode": "^1.1.21"
+    "svg2ts": "^0.3.2",
+    "vscode": "^1.1.26"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.32",
@@ -93,7 +109,7 @@
     "typescript": "^2.9.1",
     "vsce": "^1.42.0"
   },
-  "homepage": "https://github.com/tomoki1207/vscode-pdfviewer#readme",
+  "homepage": "https://github.com/xperiments/vscode-svgts#readme",
   "author": "Pedro Casaubon",
   "license": "MIT"
 }

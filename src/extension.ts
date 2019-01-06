@@ -1,8 +1,10 @@
 'use strict';
 
+import { svg2ts } from 'svg2ts';
 import * as vscode from 'vscode';
 import { ExtensionContext, TextDocument, Uri, WebviewPanel } from 'vscode';
 import { fileWatcher as watchFileChanges } from './file-watcher';
+import { kebabCase } from './strings';
 import path = require('path');
 import fs = require('fs');
 
@@ -82,46 +84,80 @@ export function activate(context: ExtensionContext) {
     openPanel(uri);
   });
 
+  const isDir = (path: string | Buffer) => {
+    var stat = fs.lstatSync(path);
+    return stat.isDirectory();
+  };
+
   const svg2tsModuleCmd = vscode.commands.registerCommand('extension.svgts-generate-from-dir', (source: Uri) => {
+    if (!source) {
+      if (vscode.window.activeTextEditor) {
+        const docPath = vscode.window.activeTextEditor.document.uri.fsPath;
+        if (!docPath.endsWith('.svg')) {
+          return;
+        }
+        source = vscode.Uri.file(docPath);
+      } else {
+        return;
+      }
+    }
+    const srcDir = isDir(source.fsPath) ? source.fsPath : path.dirname(source.fsPath);
+    const baseName = path.basename(srcDir);
+    const outputDir = srcDir.replace(baseName, '/ᗢ' + baseName);
+
     vscode.window
-      .showInputBox({ prompt: 'svgts module name', value: 'code-svgts' })
+      .showInputBox({ prompt: 'Angular generated Module Name?', value: baseName })
       .then((moduleName: string | undefined) => {
         const { exec } = require('child_process');
-        exec(
-          `cd ${source.fsPath} && svg2ts -i ./ -o ./../ᗢ-${path.basename(source.path)} -b angular -m ${moduleName}`,
-          (err, stdout, stderr) => {
-            if (err) {
-              vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
-              return;
-            }
-            vscode.window.showInformationMessage(`vscode-svgts: Succesfull generated svgts ${moduleName} module`);
+        svg2ts({ input: srcDir, output: outputDir, blueprint: 'angular', module: kebabCase(moduleName) }).then(
+          () => {
+            vscode.window.showInformationMessage(
+              `vscode-svgts: Succesfull generated svgts ${moduleName}-module module`
+            );
+          },
+          () => {
+            vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
           }
         );
       });
   });
-
+  vscode.window.onDidChangeActiveTextEditor(e => {
+    if (e) {
+      const folder = vscode.workspace.getWorkspaceFolder(e.document.uri);
+      console.log(folder);
+    }
+  });
   const svg2tsPreviewDirectory = vscode.commands.registerCommand('extension.svgts-preview-dir', (source: Uri) => {
-    const { exec } = require('child_process');
-
+    if (!source) {
+      if (vscode.window.activeTextEditor) {
+        const docPath = vscode.window.activeTextEditor.document.uri.fsPath;
+        if (!docPath.endsWith('.svg')) {
+          return;
+        }
+        source = vscode.Uri.file(docPath);
+      } else {
+        return;
+      }
+    }
+    const srcDir = isDir(source.fsPath) ? source.fsPath : path.dirname(source.fsPath);
     const extensionOutputPath = context.storagePath;
     const previewPath = path.join(extensionOutputPath, '/svg-ts-preview/svg-ts-preview.svgts');
     const openPath = vscode.Uri.file(previewPath);
-
-    exec(
-      `svg2ts -i "${source.fsPath}" -o "${extensionOutputPath}" -b angular -m svg-ts-preview`,
-      (err, stdout, stderr) => {
-        if (err) {
-          vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
-          return;
-        }
-
-        if (!revealIfAlreadyOpened(openPath)) {
-          registerPanel(showPreview(context, openPath, source));
-        }
+    svg2ts({
+      input: srcDir,
+      output: extensionOutputPath,
+      blueprint: 'angular',
+      module: 'svg-ts-preview'
+    }).then(
+      () => {
+        registerPanel(showPreview(context, openPath, source));
+      },
+      () => {
+        vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
       }
     );
   });
-  let count = 0;
+
   function showPreview(context: ExtensionContext, uri: Uri, sourceDir?: Uri): WebviewPanel {
     if (uri.fsPath.includes('.git')) {
       return;
@@ -185,9 +221,6 @@ export const assetsMap = { ${exportClasses
     });
 
     panel.onDidDispose(() => {
-      console.log('uuuuu');
-      console.log(watcher);
-      console.log('uuuuu');
       watcher.close();
     });
     return panel;
