@@ -8,11 +8,13 @@ import { SVGTSExtendedFile } from './icons-data.service';
 export class SvgTsService {
   constructor(private _sanitizer: DomSanitizer) {}
 
-  public determineColorMode(icon: SVGTSFile): 'multiple' | 'single' {
+  public determineColorMode(icon: SVGTSFile): 'multiple' | 'single' | 'bicolor' {
     // tslint:disable-next-line:max-line-length
     const regexp = /rgb[a]?\((.*?)\)|#[abcdefABCDEF0123456789]{6}|#[abcdefABCDEF0123456789]{3}|aliceblue|antiquewhite|aqua|aquamarine|azure|beige|bisque|black|blanchedalmond|blue|blueviolet|brown|burlywood|cadetblue|chartreuse|chocolate|coral|cornflowerblue|cornsilk|crimson|cyan|darkblue|darkcyan|darkgoldenrod|darkgray|darkgreen|darkgrey|darkkhaki|darkmagenta|darkolivegreen|darkorange|darkorchid|darkred|darksalmon|darkseagreen|darkslateblue|darkslategray|darkslategrey|darkturquoise|darkviolet|deeppink|deepskyblue|dimgray|dimgrey|dodgerblue|firebrick|floralwhite|forestgreen|fuchsia|gainsboro|ghostwhite|gold|goldenrod|gray|green|greenyellow|grey|honeydew|hotpink|indianred|indigo|ivory|khaki|lavender|lavenderblush|lawngreen|lemonchiffon|lightblue|lightcoral|lightcyan|lightgoldenrodyellow|lightgray|lightgreen|lightgrey|lightpink|lightsalmon|lightseagreen|lightskyblue|lightslategray|lightslategrey|lightsteelblue|lightyellow|lime|limegreen|linen|magenta|maroon|mediumaquamarine|mediumblue|mediumorchid|mediumpurple|mediumseagreen|mediumslateblue|mediumspringgreen|mediumturquoise|mediumvioletred|midnightblue|mintcream|mistyrose|moccasin|navajowhite|navy|oldlace|olive|olivedrab|orange|orangered|orchid|palegoldenrod|palegreen|paleturquoise|palevioletred|papayawhip|peachpuff|peru|pink|plum|powderblue|purple|rebeccapurple|red|rosybrown|royalblue|saddlebrown|salmon|sandybrown|seagreen|seashell|sienna|silver|skyblue|slateblue|slategray|slategrey|snow|springgreen|steelblue|tan|teal|thistle|tomato|turquoise|violet|wheat|white|whitesmoke|yellow|yellowgreen/g;
     const matches = icon.svg.match(regexp);
-    return new Set(matches ? matches.map(match => match.replace(/ /g, '')) : null).size > 1 ? 'multiple' : 'single';
+    const isMultipleColor = new Set(matches ? matches.map(match => match.replace(/ /g, '')) : null).size > 1;
+    const isBicolor = icon.svg.indexOf('"current"') !== -1;
+    return isMultipleColor ? 'multiple' : isBicolor ? 'bicolor' : 'single';
   }
 
   public getIconEncodedUri(iconFile: SVGTSExtendedFile, iconElement: ElementRef) {
@@ -49,18 +51,20 @@ export class SvgTsService {
     );
   }
 
-  public getTintInnerHtml(icon: SVGTSFile, baseColor: string) {
+  public getTintInnerHtml(icon: SVGTSFile, baseColor: string, currentColor?: string) {
+    const svg = this._staticIconHtml(icon);
     const regexp = /rgba\((.*?)\)|#[abcdefABCDEF0123456789]{6}|#[abcdefABCDEF0123456789]{3}/g;
-    const matches = icon.svg.match(regexp);
+    const matches = svg.match(regexp);
     const colors = new Set(matches ? matches.map(match => match.replace(/ /g, '')) : null).size;
+    const currentColorStyle = currentColor ? ` color:${currentColor}` : '';
     let svgOutput = '';
     if (colors === 0) {
-      svgOutput = `<g fill="${baseColor}">${icon.svg}</g>`;
+      svgOutput = `<g style="fill:${baseColor};${currentColorStyle}">${svg}</g>`;
     } else {
-      svgOutput = icon.svg.replace(
+      svgOutput = `<g style="fill:${baseColor};${currentColorStyle}">${svg.replace(
         /rgba\((.*?)\)|#[abcdefABCDEF0123456789]{6}|#[abcdefABCDEF0123456789]{3}/g,
         baseColor
-      );
+      )}</g>`;
     }
 
     return this._sanitizer.bypassSecurityTrustHtml(svgOutput);

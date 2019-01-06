@@ -112,8 +112,11 @@ export class SvgTsViewerIconComponent implements OnInit {
     this.detail = true;
   }
 
-  public tint(baseColor: any): any {
-    this.svgContents = this._svgTs.getTintInnerHtml(this.iconFile, baseColor);
+  public tint(baseColor?: string, currentColor?: string): any {
+    this.svgContents = baseColor
+      ? this._svgTs.getTintInnerHtml(this.iconFile, baseColor, currentColor)
+      : this._svgTs.getInnerHtml(this.iconFile);
+
     this.detectChanges();
   }
 
@@ -125,11 +128,11 @@ export class SvgTsViewerIconComponent implements OnInit {
 
     if (this.selected) {
       if (this._iconService.selectedAreSingle && this.icon.colorMode === 'single' && !this.icon.contextDefaults) {
-        this.tint(this._iconService.baseColor);
+        this.tint(this._iconService.baseColor, this._iconService.currentColor);
       }
     } else {
       if (this.icon.colorMode === 'single' && !this.icon.contextDefaults) {
-        this.tint('#000');
+        this.tint();
       }
     }
     this.detectChanges();

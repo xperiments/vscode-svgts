@@ -20,6 +20,7 @@ try {
 export class SvgTsViewerSidebarComponent implements OnInit {
   public baseColor = '#000000';
   public baseColorFormGroup: FormGroup;
+  public currentColor = '#ffffff';
   public gridSize: number;
   public infoKeys: Array<string> = ['name', 'width', 'height'];
 
@@ -31,7 +32,11 @@ export class SvgTsViewerSidebarComponent implements OnInit {
   ) {
     this.gridSize = this.icons.gridSize;
   }
-
+  public clearCurrentColor() {
+    this.currentColor = null;
+    this.baseColorFormGroup.get('currentColor').setValue(null);
+    this.icons.currentComponent.tint(this.icons.baseColor);
+  }
   public colorMode(mode: IconsServiceColorFilter) {
     this.icons.iconColorFilter$.next(mode);
   }
@@ -74,11 +79,13 @@ export class SvgTsViewerSidebarComponent implements OnInit {
 
   public ngOnInit() {
     this.baseColorFormGroup = new FormGroup({
-      baseColor: new FormControl(this.baseColor)
+      baseColor: new FormControl(this.baseColor),
+      currentColor: new FormControl(this.currentColor)
     });
     this.baseColorFormGroup.valueChanges.subscribe(() => {
       this.baseColor = this.baseColorFormGroup.value.baseColor;
-      this.icons.tint(this.baseColor);
+      this.currentColor = this.baseColorFormGroup.value.currentColor;
+      this.icons.tint(this.baseColor, this.currentColor);
     });
   }
 

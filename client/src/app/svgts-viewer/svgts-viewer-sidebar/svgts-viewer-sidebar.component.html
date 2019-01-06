@@ -110,19 +110,34 @@
   <div class="svgTs__legend">
     export <sup>({{ icons.selected }})</sup>
   </div>
-  <div class="svgTs__sidebarButtonGroup -inline" *ngIf="icons.selectedAreSingle">
-    <div [formGroup]="baseColorFormGroup" style="display: inline-block;">
-      <input type="color" class="svgTs__textInput -big" readonly formControlName="baseColor" />
+  <div
+    class="svgTs__sidebarButtonGroup -inline"
+    *ngIf="icons.selectedAreSingle || icons.selectedAreSingleOrBicolor"
+    [formGroup]="baseColorFormGroup"
+  >
+    <div style="display: inline-block;">
+      <input type="color" class="svgTs__textInput -big" readonly formControlName="baseColor" title="Fill Color" />
+    </div>
+    <div style="display: inline-block;" [hidden]="icons.selectedAreSingleOrBicolor">
+      <input
+        type="color"
+        class="svgTs__textInput -big"
+        [ngClass]="{ '-colorReset': baseColorFormGroup.get('currentColor').value === null }"
+        readonly
+        formControlName="currentColor"
+        title="Current Color"
+      />
+      <button class="svgTs__button -big" style="padding: 0 4px;" (click)="clearCurrentColor()">×</button>
     </div>
   </div>
   <div class="svgTs__sidebarButtonGroup -inline">
-    <button (click)="export('png', 1)" class="svgTs__button -big">png</button>
-    <button (click)="export('png', 2)" class="svgTs__button -big">2x</button>
-    <button (click)="export('png', 3)" class="svgTs__button -big">3x</button>
+    <button (click)="export('png', 1)" class="svgTs__button -big" title="Export PNG">png</button>
+    <button (click)="export('png', 2)" class="svgTs__button -big" title="Export 2@x PNG">2x</button>
+    <button (click)="export('png', 3)" class="svgTs__button -big" title="Export 3@x PNG">3x</button>
   </div>
   <div class="svgTs__sidebarButtonGroup -inline">
-    <button (click)="export('svg', 1)" class="svgTs__button -big">svg</button>
-    <button (click)="export('svg-sprite', 1)" class="svgTs__button -big">sprite</button>
+    <button (click)="export('svg', 1)" class="svgTs__button -big" title="Export SVG">svg</button>
+    <button (click)="export('svg-sprite', 1)" class="svgTs__button -big" title="Export SVG Sprite">sprite</button>
   </div>
 
   <ul class="svgTs__sidebarSelectList">

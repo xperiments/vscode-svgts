@@ -17,6 +17,7 @@
   vertical-align: top;
   resize: vertical;
   outline: none !important;
+  position: relative;
   &:disabled {
     opacity: 0.3;
     cursor: default;
@@ -45,6 +46,7 @@
   }
 
   &[type='color'] {
+    width: 22px;
     padding: 0;
     height: 32px;
     border: 1px solid #222;
@@ -58,6 +60,17 @@
     }
     &.-big {
       min-height: 36px;
+    }
+
+    &.-colorReset {
+      &:after {
+        content: '/';
+        color: #888;
+        font-size: 24px;
+        position: absolute;
+        left: 6px;
+        top: 6px;
+      }
     }
   }
 

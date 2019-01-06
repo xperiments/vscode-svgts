@@ -9,6 +9,11 @@
   position: relative;
   z-index: -1;
 
+  svg {
+    fill: #000;
+    color: #fff;
+  }
+
   &[hidden] {
     display: none;
   }
