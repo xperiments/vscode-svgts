@@ -6,7 +6,6 @@
 **/*.vsix
 client/**
 docs/**
-node_modules/**
 out/test/**
 scripts/**
 src/**
