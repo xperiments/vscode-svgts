@@ -3,7 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { SvgTsService } from './svg-ts.service';
 
 export interface SVGTSExtendedFile extends SVGTSFile {
-  colorMode: 'single' | 'multiple';
+  colorMode: 'single' | 'multiple' | 'bicolor';
   exported: boolean;
   selected: boolean;
   visible: boolean;

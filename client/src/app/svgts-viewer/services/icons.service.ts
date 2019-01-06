@@ -38,6 +38,7 @@ export function pascalCase(str: string) {
 })
 export class IconsService {
   public baseColor = '#000000';
+  public currentColor = '#ffffff';
   public currentComponent: SvgTsViewerIconComponent;
   public currentIconFile: SVGTSExtendedFile;
   public gridSize = 4;
@@ -46,6 +47,7 @@ export class IconsService {
   );
   public selected = 0;
   public selectedAreSingle = false;
+  public selectedAreSingleOrBicolor = false;
   public selectedNames: string[];
   public selectFilter$: BehaviorSubject<IconsServiceSelectFilter> = new BehaviorSubject<IconsServiceSelectFilter>(
     'all'
@@ -77,7 +79,7 @@ export class IconsService {
     if (!this.viewList) {
       return;
     }
-    this.tint('#000');
+    this.tint();
     this.viewList.forEach(element => {
       if (element.selected) {
         element.deselect();
@@ -91,7 +93,7 @@ export class IconsService {
       if (element.icon.name === name) {
         element.deselect();
         if (element.icon.colorMode === 'single' && !element.icon.contextDefaults) {
-          element.tint('#000');
+          element.tint();
         }
       }
     });
@@ -139,15 +141,43 @@ export class IconsService {
     return !contextDefaults && colorSet.has('single') && colorSet.size === 1 ? true : false;
   }
 
+  public isSingleOrBiColor() {
+    let contextDefaults = false;
+    const colorSet = this.viewList.reduce((acc, element) => {
+      if (element.selected) {
+        acc.add(element.icon.colorMode);
+        if (element.icon.contextDefaults) {
+          // tslint:disable-next-line
+          contextDefaults = true;
+        }
+      }
+
+      return acc;
+    }, new Set());
+    return !contextDefaults && (colorSet.has('single') || colorSet.has('bicolor')) && colorSet.size === 1
+      ? true
+      : false;
+  }
+
   public selectAll() {
     if (!this.viewList) {
       return;
     }
+    let first = false;
+
     this.viewList.forEach(element => {
       if (!element.selected && element.icon.visible) {
         element.select();
+
+        if (!first) {
+          if (!this.currentComponent) {
+            element.iconClick();
+          }
+          first = true;
+        }
+
         if (this.baseColor && this.selectedAreSingle) {
-          element.tint(this.baseColor);
+          element.tint(this.baseColor, this.currentColor);
         }
       }
     });
@@ -195,16 +225,17 @@ export class IconsService {
     this.gridSize = size;
   }
 
-  public tint(baseColor: string) {
+  public tint(baseColor?: string, currentColor?: string) {
     this.baseColor = baseColor;
+    this.currentColor = currentColor;
     this.viewList.forEach(element => {
       if (element.selected) {
         if (this.selectedAreSingle && element.icon.colorMode === 'single' && !element.icon.contextDefaults) {
-          element.tint(this.baseColor);
+          element.tint(this.baseColor, this.currentColor);
         }
       } else {
         if (this.selectedAreSingle && element.icon.colorMode === 'single' && !element.icon.contextDefaults) {
-          element.tint('#000');
+          element.tint();
         }
       }
     });
@@ -213,6 +244,7 @@ export class IconsService {
   public updateSelected() {
     this.selected = this.getSelected();
     this.selectedAreSingle = this.isSingleColor();
+    this.selectedAreSingleOrBicolor = this.isSingleOrBiColor();
     this.selectedNames = this.getSelectedNames();
   }
 
