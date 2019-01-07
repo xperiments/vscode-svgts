@@ -9,7 +9,7 @@ export function fileWatcher(file: string) {
     watcher = fs.watch(file, (event, filename) => {
       if (event === 'change') {
         const current = fs.readFileSync(file, 'utf8');
-        if (original !== current) {
+        if (JSON.stringify(JSON.parse(original).files) !== JSON.stringify(JSON.parse(current).files)) {
           watcher.close();
           resolve(watcher);
         }
