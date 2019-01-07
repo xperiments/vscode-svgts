@@ -1,237 +1,39 @@
 'use strict';
 
-import { svg2ts } from 'svg2ts';
-import * as vscode from 'vscode';
-import { ExtensionContext, TextDocument, Uri, WebviewPanel } from 'vscode';
-import { fileWatcher as watchFileChanges } from './file-watcher';
-import { kebabCase } from './strings';
-import path = require('path');
-import fs = require('fs');
-
-const deleteFolderRecursive = path => {
-  if (fs.existsSync(path)) {
-    fs.readdirSync(path).forEach(function(file, index) {
-      var curPath = path + '/' + file;
-      if (fs.lstatSync(curPath).isDirectory()) {
-        // recurse
-        deleteFolderRecursive(curPath);
-      } else {
-        // delete file
-        fs.unlinkSync(curPath);
-      }
-    });
-    fs.rmdirSync(path);
-  }
-};
-
-const indexHtmlFile = fs.readFileSync(__dirname + '/index.html', 'utf8');
-
-function getLocalResourceRoots(context: ExtensionContext, resource: vscode.Uri): vscode.Uri[] {
-  const baseRoots = [vscode.Uri.file(context.extensionPath)];
-  const folder = vscode.workspace.getWorkspaceFolder(resource);
-  if (folder) {
-    return baseRoots.concat(folder.uri);
-  }
-
-  if (!resource.scheme || resource.scheme === 'file') {
-    return baseRoots.concat(vscode.Uri.file(path.dirname(resource.fsPath)));
-  }
-
-  return baseRoots;
-}
+import { commands, ExtensionContext, TextDocument, Uri, WebviewPanel, window, workspace } from 'vscode';
+import { svgtsFromDirCommandMethod, svgtsPreviewDirectoryCommandMethod } from './commands';
+import { openPanel, previewAndCloseSrcDoc } from './utils';
 
 export function activate(context: ExtensionContext) {
   const openedPanels: WebviewPanel[] = [];
 
-  const openPanel = uri => {
-    if (!revealIfAlreadyOpened(uri)) {
-      registerPanel(showPreview(context, uri));
-    }
-  };
-  const revealIfAlreadyOpened = (uri: Uri): boolean => {
-    const opened = openedPanels.find(panel => panel.viewType === uri.fsPath);
-    if (!opened) {
-      return false;
-    }
-    opened.reveal(opened.viewColumn);
-    return true;
-  };
-
-  const registerPanel = (panel: WebviewPanel): void => {
-    if (!panel) {
-      return;
-    }
-    panel.onDidDispose(() => {
-      openedPanels.splice(openedPanels.indexOf(panel), 1);
-    });
-    openedPanels.push(panel);
-  };
-
-  const previewAndCloseSrcDoc = async (document: TextDocument): Promise<void> => {
-    if (document.uri.toString().indexOf('.svgts') !== -1) {
-      vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-      setTimeout(() => {
-        openPanel(document.uri);
-      }, 300);
-    }
-  };
-
-  const openedEvent = vscode.workspace.onDidOpenTextDocument((document: TextDocument) => {
-    previewAndCloseSrcDoc(document);
+  const onDidOpenTextDocument = workspace.onDidOpenTextDocument((document: TextDocument) => {
+    previewAndCloseSrcDoc(document, openedPanels, context);
   });
 
-  const previewCmd = vscode.commands.registerCommand('extension.svgts-preview', (uri: Uri) => {
-    openPanel(uri);
+  const svgtsPreviewCommand = commands.registerCommand('extension.svgts-preview', (uri: Uri) => {
+    openPanel(uri, openedPanels, context);
   });
 
-  const isDir = (path: string | Buffer) => {
-    var stat = fs.lstatSync(path);
-    return stat.isDirectory();
-  };
+  const svgtsFromDirCommand = commands.registerCommand('extension.svgts-generate-from-dir', svgtsFromDirCommandMethod);
 
-  const svg2tsModuleCmd = vscode.commands.registerCommand('extension.svgts-generate-from-dir', (source: Uri) => {
-    if (!source) {
-      if (vscode.window.activeTextEditor) {
-        const docPath = vscode.window.activeTextEditor.document.uri.fsPath;
-        if (!docPath.endsWith('.svg')) {
-          return;
-        }
-        source = vscode.Uri.file(docPath);
-      } else {
-        return;
-      }
-    }
-    const srcDir = isDir(source.fsPath) ? source.fsPath : path.dirname(source.fsPath);
-    const baseName = path.basename(srcDir);
-    const outputDir = srcDir.replace(baseName, '/ᗢ' + baseName);
+  const svgtsPreviewDirectoryCommand = commands.registerCommand(
+    'extension.svgts-preview-dir',
+    svgtsPreviewDirectoryCommandMethod(context, openedPanels)
+  );
 
-    vscode.window
-      .showInputBox({ prompt: 'Angular generated Module Name?', value: baseName })
-      .then((moduleName: string | undefined) => {
-        const { exec } = require('child_process');
-        svg2ts({ input: srcDir, output: outputDir, blueprint: 'angular', module: kebabCase(moduleName) }).then(
-          () => {
-            vscode.window.showInformationMessage(
-              `vscode-svgts: Succesfull generated svgts ${moduleName}-module module`
-            );
-          },
-          () => {
-            vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
-          }
-        );
-      });
-  });
-  vscode.window.onDidChangeActiveTextEditor(e => {
-    if (e) {
-      const folder = vscode.workspace.getWorkspaceFolder(e.document.uri);
-      console.log(folder);
-    }
-  });
-  const svg2tsPreviewDirectory = vscode.commands.registerCommand('extension.svgts-preview-dir', (source: Uri) => {
-    if (!source) {
-      if (vscode.window.activeTextEditor) {
-        const docPath = vscode.window.activeTextEditor.document.uri.fsPath;
-        if (!docPath.endsWith('.svg')) {
-          return;
-        }
-        source = vscode.Uri.file(docPath);
-      } else {
-        return;
-      }
-    }
-    const srcDir = isDir(source.fsPath) ? source.fsPath : path.dirname(source.fsPath);
-    const extensionOutputPath = context.storagePath;
-    const previewPath = path.join(extensionOutputPath, '/svg-ts-preview/svg-ts-preview.svgts');
-    const openPath = vscode.Uri.file(previewPath);
-    svg2ts({
-      input: srcDir,
-      output: extensionOutputPath,
-      blueprint: 'angular',
-      module: 'svg-ts-preview'
-    }).then(
-      () => {
-        registerPanel(showPreview(context, openPath, source));
-      },
-      () => {
-        vscode.window.showErrorMessage('vscode-svgts: Something was wrong while converting');
-      }
-    );
-  });
-
-  function showPreview(context: ExtensionContext, uri: Uri, sourceDir?: Uri): WebviewPanel {
-    if (uri.fsPath.includes('.git')) {
-      return;
-    }
-
-    const configContents = fs.readFileSync(uri.fsPath, 'utf8');
-    const basename = path.basename(uri.fsPath);
-    const column = vscode.window.activeTextEditor ? vscode.window.activeTextEditor.viewColumn : 1;
-    const panel = vscode.window.createWebviewPanel(
-      uri.fsPath, // treated as identity
-      basename,
-      column,
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: getLocalResourceRoots(context, uri)
-      }
-    );
-
-    if (!panel) {
-      return;
-    }
-    panel.webview.html = indexHtmlFile.replace('__icons__', configContents);
-    // Handle messages from the webview
-    panel.webview.onDidReceiveMessage(
-      message => {
-        switch (message.command) {
-          case 'updateExports':
-            const exportClasses = message.exports;
-            const assets = message.assets;
-
-            const assetsTs = `import {\n${exportClasses.join(',\n  ')}
-} from '../assets';
-
-export const assetsMap = { ${exportClasses
-              .map(asset => {
-                return `[${asset}.name]: ${asset}`;
-              })
-              .join(',\n  ')}
-};
-`;
-
-            // update assets index
-            fs.writeFileSync(path.dirname(uri.fsPath) + '/components/assets.ts', assetsTs, 'utf8');
-
-            const currentConfig = JSON.parse(configContents);
-            currentConfig.exports = assets;
-            fs.writeFileSync(uri.fsPath, JSON.stringify(currentConfig, null, 2), 'utf8');
-            return;
-        }
-      },
-      undefined,
-      context.subscriptions
-    );
-
-    const { promise, watcher } = watchFileChanges(uri.fsPath);
-
-    promise.then((watcher: fs.FSWatcher) => {
-      panel.dispose();
-      openPanel(uri);
-    });
-
-    panel.onDidDispose(() => {
-      watcher.close();
-    });
-    return panel;
+  // If vscode-svgts file is already opened when load workspace.
+  if (window.activeTextEditor) {
+    previewAndCloseSrcDoc(window.activeTextEditor.document, openedPanels, context);
   }
 
-  // If pdf file is already opened when load workspace.
-  if (vscode.window.activeTextEditor) {
-    previewAndCloseSrcDoc(vscode.window.activeTextEditor.document);
-  }
-
-  context.subscriptions.push(openedEvent, previewCmd, svg2tsModuleCmd, svg2tsPreviewDirectory);
+  context.subscriptions.push(
+    onDidOpenTextDocument,
+    svgtsPreviewCommand,
+    svgtsFromDirCommand,
+    svgtsPreviewDirectoryCommand
+  );
+  console.log('vscode-svgts activated');
 }
 
 export function deactivate() {
