@@ -21,8 +21,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
-    "package": "ng lint && ng build --prod",
+    "build": "ng build --prod --aot",
+    "package": "ng lint && ng build --prod --aot --build-optimizer",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
