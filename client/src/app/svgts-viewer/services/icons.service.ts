@@ -38,6 +38,10 @@ export function pascalCase(str: string) {
 })
 export class IconsService {
   public baseColor = '#000000';
+  public browsingMode: 'module' | 'browsing' = 'module';
+  public browsingMode$: BehaviorSubject<IconsService['browsingMode']> = new BehaviorSubject<
+    IconsService['browsingMode']
+  >('module');
   public currentColor = '#ffffff';
   public currentComponent: SvgTsViewerIconComponent;
   public currentIconFile: SVGTSExtendedFile;
@@ -219,6 +223,11 @@ export class IconsService {
     this.viewList.forEach(element => {
       element[element.icon.colorMode === 'single' && !element.icon.contextDefaults ? 'show' : 'hide']();
     });
+  }
+
+  public setBrowsingMode(mode: IconsService['browsingMode']): any {
+    this.browsingMode = mode;
+    this.browsingMode$.next(mode);
   }
 
   public setGridSize(size: number) {

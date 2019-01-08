@@ -9,6 +9,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { SafeHtml } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 import { SVGTSExtendedFile } from '../services/icons-data.service';
 import { IconsService } from '../services/icons.service';
 import { KeyboardService } from '../services/keyboard.service';
@@ -21,6 +22,8 @@ import { SvgTsService } from '../services/svg-ts.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SvgTsViewerIconComponent implements OnInit {
+  public browsingMode: IconsService['browsingMode'] = 'module';
+  public browsingModeSubscription: Subscription;
   @HostBinding('class.-detail') public detail = false;
   @HostBinding('class.-exported') public exported: boolean;
   public iconFile: SVGTSExtendedFile;
@@ -38,10 +41,10 @@ export class SvgTsViewerIconComponent implements OnInit {
   }
 
   constructor(
+    private _iconService: IconsService,
     private _keyboard: KeyboardService,
     private _svgTs: SvgTsService,
-    private _cdr: ChangeDetectorRef,
-    private _iconService: IconsService
+    private _cdr: ChangeDetectorRef
   ) {}
 
   public deselect() {
@@ -81,7 +84,15 @@ export class SvgTsViewerIconComponent implements OnInit {
     }
   }
 
+  public mustShowExportIcon() {
+    return this.icon.exported && this.browsingMode === 'module';
+  }
+
   public ngOnInit() {
+    this.browsingModeSubscription = this._iconService.browsingMode$.subscribe(mode => {
+      this.browsingMode = mode;
+      this._cdr.markForCheck();
+    });
     this.svgContents = this._svgTs.getInnerHtml(this.iconFile);
   }
 

@@ -11,7 +11,7 @@ import { SvgTsViewerIconComponent } from '../svgts-viewer-icon/svgts-viewer-icon
 })
 export class SvgTsViewerIconsComponent implements AfterViewInit {
   @Input() public gridSize = 5;
-  @ViewChildren(SvgTsViewerIconComponent) private _viewList: QueryList<SvgTsViewerIconComponent>;
+  @ViewChildren(SvgTsViewerIconComponent) public viewList: QueryList<SvgTsViewerIconComponent>;
 
   constructor(public iconsData: IconsDataService, public iconsService: IconsService) {}
 
@@ -27,6 +27,6 @@ export class SvgTsViewerIconsComponent implements AfterViewInit {
   }
 
   public ngAfterViewInit() {
-    this.iconsService.viewList = this._viewList;
+    this.iconsService.viewList = this.viewList;
   }
 }
