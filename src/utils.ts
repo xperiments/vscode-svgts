@@ -83,11 +83,14 @@ export function registerPanel(panel: WebviewPanel, openedPanels: WebviewPanel[])
   openedPanels.push(panel);
 }
 
+let previewCount = 0;
+
 export function showPreview(
   context: ExtensionContext,
   uri: Uri,
   openedPanels: WebviewPanel[],
-  sourceDir?: Uri
+  isBrowsingDir: boolean = false,
+  browsingDir: Uri = null
 ): WebviewPanel {
   if (uri.fsPath.includes('.git')) {
     return;
@@ -98,7 +101,7 @@ export function showPreview(
   const column = window.activeTextEditor ? window.activeTextEditor.viewColumn : 1;
   const panel = window.createWebviewPanel(
     uri.fsPath, // treated as identity
-    basename,
+    isBrowsingDir ? 'ᗢ SVG Browser' : `ᗢ ${basename}`,
     column,
     {
       enableScripts: true,
@@ -113,36 +116,55 @@ export function showPreview(
 
   panel.webview.html = indexHtmlFile.replace('__icons__', configContents);
   // Handle messages from the webview
-  panel.webview.onDidReceiveMessage(
-    message => {
-      switch (message.command) {
-        case 'updateExports':
-          const exportClasses = message.exports;
-          const assets = message.assets;
+  (panel => {
+    panel.webview.onDidReceiveMessage(
+      message => {
+        switch (message.command) {
+          case 'loaded': {
+            if (isBrowsingDir) {
+              panel.webview.postMessage({
+                command: 'svgts.command.setBrowsingMode',
+                data: 'browsing'
+              });
 
-          const assetsTs = `import {\n${exportClasses.join(',\n  ')}
+              if (browsingDir.fsPath.endsWith('.svg')) {
+                panel.webview.postMessage({
+                  command: 'svgts.command.iconDetail',
+                  data: path.basename(browsingDir.fsPath).replace('.svg', '')
+                });
+              }
+            }
+            break;
+          }
+
+          case 'updateExports':
+            const exportClasses = message.exports;
+            const assets = message.assets;
+
+            const assetsTs = `import {\n${exportClasses.join(',\n  ')}
 } from '../assets';
 
 export const assetsMap = { ${exportClasses
-            .map(asset => {
-              return `[${asset}.name]: ${asset}`;
-            })
-            .join(',\n  ')}
+              .map(asset => {
+                return `[${asset}.name]: ${asset}`;
+              })
+              .join(',\n  ')}
 };
 `;
 
-          // update assets index
-          fs.writeFileSync(path.dirname(uri.fsPath) + '/components/assets.ts', assetsTs, 'utf8');
+            // update assets index
+            fs.writeFileSync(path.dirname(uri.fsPath) + '/components/assets.ts', assetsTs, 'utf8');
 
-          const currentConfig = JSON.parse(configContents);
-          currentConfig.exports = assets;
-          fs.writeFileSync(uri.fsPath, JSON.stringify(currentConfig, null, 2), 'utf8');
-          return;
-      }
-    },
-    undefined,
-    context.subscriptions
-  );
+            const currentConfig = JSON.parse(configContents);
+            currentConfig.exports = assets;
+            fs.writeFileSync(uri.fsPath, JSON.stringify(currentConfig, null, 2), 'utf8');
+            return;
+        }
+      },
+      undefined,
+      context.subscriptions
+    );
+  })(panel);
 
   const { promise, watcher } = fileWatcher(uri.fsPath);
 

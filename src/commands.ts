@@ -27,7 +27,7 @@ export const svgtsPreviewDirectoryCommandMethod = (context, openedPanels) => (so
     module: 'svg-ts-preview'
   }).then(
     () => {
-      registerPanel(showPreview(context, openPath, openedPanels, source), openedPanels);
+      registerPanel(showPreview(context, openPath, openedPanels, true, source), openedPanels);
     },
     () => {
       window.showErrorMessage('vscode-svgts: Something was wrong while converting');
