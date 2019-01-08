@@ -60,7 +60,7 @@
     <div
       style="text-align: right; margin-right: 8px;"
       class="svgTs__sidebarButtonGroup"
-      *ngIf="!icons.currentIconFile?.contextDefaults && iconsData.isPluging"
+      *ngIf="!icons.currentIconFile?.contextDefaults && iconsData.isPluging && icons.browsingMode === 'module'"
     >
       <label class="svgTs__label"
         ><span class="svgTs__labelTitle">bundle</span>
