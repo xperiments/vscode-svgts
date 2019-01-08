@@ -6,6 +6,7 @@ import { IconsDataService } from './services/icons-data.service';
 import { IconsService } from './services/icons.service';
 import { KeyboardService } from './services/keyboard.service';
 import { SvgTsService } from './services/svg-ts.service';
+import { VscodeService } from './services/vscode.service';
 import { SvgTsDragInputComponent } from './svgts-drag-input/svgts-drag-input.component';
 import { SvgViewerTsNestedFormComponent } from './svgts-viewer-form/nested-form/svgts-viewer-nested-form.component';
 import { SvgViewerTsFormComponent } from './svgts-viewer-form/svgts-viewer-form.component';
@@ -24,7 +25,7 @@ const declarations = [
   SvgTsDragInputComponent
 ];
 
-const providers = [KeyboardService, IconsService, IconsDataService, ClipboardService, SvgTsService];
+const providers = [KeyboardService, IconsService, IconsDataService, ClipboardService, SvgTsService, VscodeService];
 
 @NgModule({
   imports: [BrowserModule, FormsModule, ReactiveFormsModule],
