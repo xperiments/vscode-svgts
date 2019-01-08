@@ -4,13 +4,7 @@ import { ClipboardService } from '../services/clipboard.service';
 import { IconsDataService } from '../services/icons-data.service';
 import { IconsService, IconsServiceColorFilter, IconsServiceSelectFilter } from '../services/icons.service';
 import { SvgTsService } from '../services/svg-ts.service';
-
-declare var acquireVsCodeApi;
-let vscode;
-// yeye
-try {
-  vscode = acquireVsCodeApi();
-} catch {}
+import { VscodeService } from '../services/vscode.service';
 
 @Component({
   selector: 'svgts-viewer-sidebar',
@@ -28,7 +22,8 @@ export class SvgTsViewerSidebarComponent implements OnInit {
     public icons: IconsService,
     public iconsData: IconsDataService,
     private _clipboard: ClipboardService,
-    private _svgTs: SvgTsService
+    private _svgTs: SvgTsService,
+    private _vscode: VscodeService
   ) {
     this.gridSize = this.icons.gridSize;
   }
@@ -102,13 +97,11 @@ export class SvgTsViewerSidebarComponent implements OnInit {
     this.icons.currentIconFile.exported = !this.icons.currentIconFile.exported;
     this.icons.currentComponent.detectChanges();
 
-    if (vscode) {
-      vscode.postMessage({
-        command: 'updateExports',
-        exports: this.icons.getExported(),
-        assets: this.icons.getExportedAssets()
-      });
-    }
+    this._vscode.editor.postMessage({
+      command: 'updateExports',
+      exports: this.icons.getExported(),
+      assets: this.icons.getExportedAssets()
+    });
   }
 
   public updateBaseColorForm() {
