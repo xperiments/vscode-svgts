@@ -1,7 +1,7 @@
 import fs = require('fs');
 
 export function fileWatcher(file: string) {
-  console.log(`Watching for file changes on ${file}`);
+  console.log(`[vscode-svg2ts] Watching for file changes on ${file}`);
   const original = fs.readFileSync(file, 'utf8');
   let watcher: fs.FSWatcher;
   const promise = new Promise<fs.FSWatcher>((resolve, reject) => {

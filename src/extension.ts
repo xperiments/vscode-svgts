@@ -33,9 +33,9 @@ export function activate(context: ExtensionContext) {
     svgtsFromDirCommand,
     svgtsPreviewDirectoryCommand
   );
-  console.log('vscode-svgts activated');
+  console.log('[vscode-svg2ts] activated');
 }
 
 export function deactivate() {
-  console.log('vscode-svgts deactivated');
+  console.log('[vscode-svg2ts] deactivated');
 }
