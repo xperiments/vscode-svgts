@@ -24,7 +24,8 @@ export const svgtsPreviewDirectoryCommandMethod = (context, openedPanels) => (so
     input: srcDir,
     output: extensionOutputPath,
     blueprint: 'angular',
-    module: 'svg-ts-preview'
+    module: 'svg-ts-preview',
+    config: null
   }).then(
     () => {
       registerPanel(showPreview(context, openPath, openedPanels, true, source), openedPanels);
@@ -55,7 +56,13 @@ export const svgtsFromDirCommandMethod = (source: Uri) => {
     .showInputBox({ prompt: 'Angular generated Module Name?', value: baseName })
     .then((moduleName: string | undefined) => {
       const { exec } = require('child_process');
-      svg2ts({ input: srcDir, output: outputDir, blueprint: 'angular', module: kebabCase(moduleName) }).then(
+      svg2ts({
+        input: srcDir,
+        output: outputDir,
+        blueprint: 'angular',
+        module: kebabCase(moduleName),
+        config: null
+      }).then(
         () => {
           window.showInformationMessage(`vscode-svgts: Succesfull generated svgts ${moduleName}-module module`);
         },
