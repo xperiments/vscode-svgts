@@ -72,6 +72,10 @@
         top: 6px;
       }
     }
+
+    &.-block {
+      width: 100%;
+    }
   }
 
   &[type='checkbox'] {
