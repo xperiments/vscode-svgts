@@ -2,7 +2,7 @@
   "name": "vscode-svgts",
   "displayName": "vscode-svgts",
   "description": "This extension adds svg browsing / module generation / exporting features to VS Code. It serves as a UI tool for the svg2ts cli utility.",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "xperiments",
   "engines": {
     "vscode": "^1.30.0"
@@ -110,8 +110,8 @@
     "client": "./scripts/package-client.sh"
   },
   "dependencies": {
-    "svg2ts": "^0.3.8",
-    "vscode": "^1.1.26"
+    "svg2ts": "^0.4.0",
+    "vscode": "^1.1.28"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.32",
