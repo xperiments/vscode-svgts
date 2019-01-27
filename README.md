@@ -20,7 +20,7 @@ It serves as a UI tool for the [svg2ts](https://github.com/xperiments/svg2ts) cl
 
 ## How to use this extension?
 
-Install and open [Visual Studio Code](https://code.visualstudio.com). Press `Ctrl+Shift+X` or `Cmd+Shift+X` to open the Extensions pane. Find and install the `vscode-svgts` extension. You can also install the extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=ms-vscode.Go).
+Install and open [Visual Studio Code](https://code.visualstudio.com). Press `Ctrl+Shift+X` or `Cmd+Shift+X` to open the Extensions pane. Find and install the `vscode-svgts` extension. You can also install the extension from the [Marketplace](https://marketplace.visualstudio.com/items?itemName=xperiments.vscode-svgts).
 
 ## Opening .svgts files
 
